@@ -2,7 +2,7 @@
 ## To accomplish this:
    1. Print the newfaceplate.step file. As the esp32 does not support the use of the volume control, this removes that control and adds a home assistant logo.
    2. Solder the led strip to pin 1 of the esp32 and the 5V and ground pads on the side of the respeaker lite
-   3. Use the included newyaml.yaml file in home assistant
+   3. Use the included newyaml.yaml file in home assistant. Add your encryption key to the file and change the name to anything you desire.
    that it!
 
    original documentation follows:
