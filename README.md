@@ -4,6 +4,7 @@
    2. Solder the led strip to pin 1 of the esp32 and the 5V and ground pads on the side of the respeaker lite
    3. Use the included newyaml.yaml file in home assistant. Add your encryption key to the file and change the name to anything you desire.
    4. That's it, enjoy the improved sound and HA lighting control of koala!
+ <img src="/casing/images/koala1.jpg" width="400">
 
    original documentation follows:
 
