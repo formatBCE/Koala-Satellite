@@ -5,7 +5,7 @@
    3. Use the included newyaml.yaml file in home assistant. Add your encryption key to the file and change the name to anything you desire.
    4. That's it, enjoy the improved sound and HA lighting control of koala!
  <img src="/casing/images/koala1.jpg" width="400">
-Watch the video of respeaker in action with music assistant: (https://www.youtube.com/shorts/Wk3J1GyNItQ)
+Watch the video of respeaker in action with music assistant: Don't be too concerned about response time, my internet is slow.... (https://www.youtube.com/shorts/Wk3J1GyNItQ)
 #formatbce's original documentation follows:
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/formatbce)
