@@ -1,3 +1,5 @@
+# This fork is for those people who have a respeaker lite with soldered xiao esp32-s3 and wish to use the Koala case with the led light ring.
+
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/formatbce)
 
 # Koala Satellite
