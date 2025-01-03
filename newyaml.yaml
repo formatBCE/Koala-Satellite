@@ -5,7 +5,7 @@ api:
   on_client_disconnected:
     - script.execute: control_leds
   encryption:
-    key: "YVWtdGw/Fcq599S+1Euzq+5Mh9wJnIUk3nVC8mL6uTk="
+    key: "paste your key here"
 ota:
   - platform: esphome
     id: ota_esphome
@@ -26,8 +26,8 @@ wifi:
 
 
 substitutions:
-  name: koala-two
-  friendly_name: Koala Two
+  name: add your own name
+  friendly_name: add your name
   # add the follwing to pasted code:
 #esphome:
 #  name: ${name}
