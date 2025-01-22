@@ -13,7 +13,7 @@ Watch the video of respeaker in action with music assistant: Don't be too concer
 The D1 mini is inside the koala case, and communicates with the koala media controller via home assistant.  
 This allows the respeaker lite with embedded esp s3 to have a volume control!  
 An additional benefit is the encoder switch actions have been added to home assistant as events that can be included in automations.  
-The button appears very stable and the D1 min does not appear to be the  debouncing issues that formatbce reported with using the external ESP s3.  
+The button appears very stable and the D1 mini does not appear to have the  debouncing issues that formatbce reported with using the external ESP s3.  
 An example automation to illustrtate the use of buttons is included, see: "example ha automation.yaml"  
 
 the esphome config for the d1 mini is provided as: 'encoder.yaml' 
