@@ -9,7 +9,7 @@ Watch the video of respeaker in action with music assistant: Don't be too concer
 
 # UPDATE: I have managed to add an encoder to allow the use of the original casing and have full volume control as well as another event button for use in home assistant automations
 
-# To accomplish this I have added a d1 mini to control the encoder.
+# To accomplish this I have added a d1 mini to control the koala KY040 encoder.
 The D1 mini is inside the koala case, and communicates with the koala media controller via home assistant.  
 This allows the respeaker lite with embedded esp s3 to have a volume control!  
 An additional benefit is the encoder switch actions have been added to home assistant as events that can be included in automations.  
