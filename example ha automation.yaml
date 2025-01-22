@@ -1,0 +1,95 @@
+alias: koala three encoder button actions
+description: ""
+triggers:
+  - trigger: state
+    entity_id:
+      - event.koala_two_encoder_button_press
+conditions: []
+actions:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: event.koala_two_encoder_button_press
+            state: long_press
+            attribute: event_type
+        sequence:
+          - action: music_assistant.play_media
+            data:
+              media_id: CBC Radio One - Kingston, ON (MP3 Stream)
+              media_type: radio
+            target:
+              entity_id: media_player.koala_two_media_player_2
+      - conditions:
+          - condition: state
+            entity_id: event.koala_two_encoder_button_press
+            state: double_press
+            attribute: event_type
+        sequence:
+          - data:
+              shuffle: true
+            action: media_player.shuffle_set
+            target:
+              entity_id: media_player.koala_two_media_player_2
+          - action: music_assistant.play_media
+            data:
+              media_type: playlist
+              media_id: Soft Instrumental Dinner Mix
+              enqueue: replace
+              radio_mode: false
+            target:
+              entity_id: media_player.koala_two_media_player_2
+          - target:
+              entity_id:
+                - media_player.koala_one_media_player_2
+            data:
+              shuffle: true
+            action: media_player.shuffle_set
+      - conditions:
+          - condition: state
+            entity_id: event.koala_two_encoder_button_press
+            state: triple_press
+            attribute: event_type
+        sequence:
+          - data:
+              shuffle: true
+            action: media_player.shuffle_set
+            target:
+              entity_id: media_player.koala_two_media_player_2
+          - action: music_assistant.play_media
+            data:
+              media_type: playlist
+              media_id: Dinner Instrumental Jazz Mix
+              radio_mode: false
+              enqueue: replace
+            target:
+              entity_id: media_player.koala_two_media_player_2
+          - data:
+              shuffle: true
+            action: media_player.shuffle_set
+            target:
+              entity_id: media_player.koala_two_media_player_2
+      - conditions:
+          - condition: state
+            entity_id: event.koala_two_encoder_button_press
+            state: single_press
+            attribute: event_type
+        sequence:
+          - data:
+              shuffle: true
+            action: media_player.shuffle_set
+            target:
+              entity_id: media_player.koala_two_media_player_2
+          - action: music_assistant.play_media
+            data:
+              media_type: playlist
+              media_id: Cozy Coffeeshop
+              radio_mode: false
+              enqueue: replace
+            target:
+              entity_id: media_player.koala_two_media_player_2
+          - data:
+              shuffle: true
+            action: media_player.shuffle_set
+            target:
+              entity_id: media_player.koala_two_media_player_2
+mode: single
