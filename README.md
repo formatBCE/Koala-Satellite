@@ -7,14 +7,15 @@
  <img src="/casing/images/koala1.jpg" width="400">
 Watch the video of respeaker in action with music assistant: Don't be too concerned about response time, my internet is slow.... (https://www.youtube.com/shorts/Wk3J1GyNItQ)
 
-# UPDATE: I have managed to include the Koala KY040 encoder to allow the use of the original casing and have full volume control as well as another event button for use in home assistant automations
+# UPDATE: I have managed to include the Koala KY040 encoder to allow the use of the original casing and have full volume control as well as another event based pushbutton for use in home assistant automations
 
 # To accomplish this I have added a d1 mini to control the koala KY040 encoder.
 The D1 mini is inside the koala case, and communicates with the koala media controller via home assistant.  
 This allows the respeaker lite with embedded esp s3 to have a volume control!  
 An additional benefit is the encoder switch actions have been added to home assistant as events that can be included in automations.  
 The button appears very stable and the D1 mini does not appear to have the  debouncing issues that formatbce reported with using the external ESP s3.  
-An example automation to illustrate the use of the encoder pushbutton is included, see: "example ha automation.yaml"  
+An example automation to illustrate the use of the encoder pushbutton is included, see: "example ha automation.yaml" 
+The events are 'single_press', 'double_press' 'triple_press' and 'long_press'
 
 the esphome config for the d1 mini is provided as: 'encoder.yaml'   
 The wiring is straightforward:  
