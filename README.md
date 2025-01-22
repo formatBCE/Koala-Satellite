@@ -7,7 +7,33 @@
  <img src="/casing/images/koala1.jpg" width="400">
 Watch the video of respeaker in action with music assistant: Don't be too concerned about response time, my internet is slow.... (https://www.youtube.com/shorts/Wk3J1GyNItQ)
 
-[!formatbce's original documentation follows:]
+# UPDATE: I have managed to add an encoder to allow the use of the original casing and have full volume control as well as another event button for use in home assistant automations
+
+# To accomplish this I have added a d1 mini to control the encoder.
+The D1 mini is inside the koala case, and communicates with the koala media controller via home assistant.  
+This allows the respeaker lite with embedded esp s3 to have a volume control!  
+An additional benefit is the encoder switch actions have been added to home assistant as events that can be included in automations.  
+The button appears very stable and the D1 min does not appear to be the  debouncing issues that formatbce reported with using the external ESP s3.  
+An example automation to illustrtate the use of buttons is included, see: "example ha automation.yaml"  
+
+the esphome config for the d1 mini is provided as: 'encoder.yaml' 
+wiring is straightforward:
+Vbus - 5V  
+GND - GND  
+gpio0 - SW  
+gpio4 - CLK  
+gpio5 - DT  
+
+
+ <img src="/casing/images/encoder1.jpg" width="400">
+  <img src="/casing/images/encoder2.jpg" width="400">
+   <img src="/casing/images/encoder3.jpg" width="400">
+
+Simply connect the d1 mini and add it to the original case.
+# important: In the esphome home assistant configuration for the d1 mini encoder, click on configure and select "Allow the device to perform Home Assistant actions" or it will not work!
+
+
+[formatbce's original documentation follows:]
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/formatbce)
 
