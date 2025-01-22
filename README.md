@@ -7,15 +7,14 @@
  <img src="/casing/images/koala1.jpg" width="400">
 Watch the video of respeaker in action with music assistant: Don't be too concerned about response time, my internet is slow.... (https://www.youtube.com/shorts/Wk3J1GyNItQ)
 
-# UPDATE: I have managed to include the Koala KY040 encoder to allow the use of the original casing and have full volume control. The KY040 pushbutton allows for creating another event based home assistant automation. in combination with the existing respeaker lite pushbutton automation, this allows for up to 7 events from the pushbuttons on the media player for home assistant to respond to! (1 single press, 2 double presses, 2 triple presses and 2 long presses)
+# UPDATE: I have managed to include the Koala KY040 encoder to allow the use of the original casing and have full volume control. The KY040 pushbutton also allows for creating another event based home assistant automation. in combination with the existing respeaker lite pushbutton automation, this allows for up to 7 events from the pushbuttons on the media player for home assistant to respond to! (1 single press, 2 double presses, 2 triple presses and 2 long presses)
 
 # To accomplish all this I have added a d1 mini to control the koala KY040 encoder.
 The D1 mini is inside the koala case, and communicates with the koala media controller via home assistant.  
-This allows the respeaker lite with embedded esp s3 to use the koala encider for volume control!  
-An additional benefit is the encoder switch actions have been added to home assistant as events that can be included in automations.  
+This allows the respeaker lite with embedded esp s3 to use the koala encoder for volume control!  
+An additional benefit is the encoder pushbutton actions have been added to home assistant as events that can be included in automations.  
 The button appears very stable and the D1 mini does not appear to have the  debouncing issues that formatbce reported with using the external ESP s3.  
-An example automation to illustrate the use of the encoder pushbutton is included, see: "example ha automation.yaml" 
-The events are 'single_press', 'double_press' 'triple_press' and 'long_press'
+An example automation to illustrate the use of the encoder pushbutton is included, see: "example ha automation.yaml"  The events are 'single_press', 'double_press' 'triple_press' and 'long_press'
 
 the esphome config for the d1 mini is provided as: 'encoder.yaml'   
 The wiring is straightforward:  
