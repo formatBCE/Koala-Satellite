@@ -16,8 +16,9 @@ An additional benefit is the encoder switch actions have been added to home assi
 The button appears very stable and the D1 mini does not appear to have the  debouncing issues that formatbce reported with using the external ESP s3.  
 An example automation to illustrtate the use of buttons is included, see: "example ha automation.yaml"  
 
-the esphome config for the d1 mini is provided as: 'encoder.yaml' 
-wiring is straightforward:
+the esphome config for the d1 mini is provided as: 'encoder.yaml'   
+The wiring is straightforward:  
+
 Vbus - 5V  
 GND - GND  
 gpio0 - SW  
