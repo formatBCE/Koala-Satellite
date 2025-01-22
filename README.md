@@ -17,6 +17,7 @@ The button appears very stable and the D1 mini does not appear to have the  debo
 An example automation to illustrate the use of the encoder pushbutton is included, see: "example ha automation.yaml"  The events are 'single_press', 'double_press' 'triple_press' and 'long_press'
 
 the esphome config for the d1 mini is provided as: 'encoder.yaml'   
+change the wifi ssid and media player name. 
 The wiring is straightforward:  
 
 Vbus - 5V  
