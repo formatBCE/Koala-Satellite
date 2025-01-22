@@ -7,7 +7,7 @@
  <img src="/casing/images/koala1.jpg" width="400">
 Watch the video of respeaker in action with music assistant: Don't be too concerned about response time, my internet is slow.... (https://www.youtube.com/shorts/Wk3J1GyNItQ)
 
-# UPDATE: I have managed to include the Koala KY040 encoder to allow the use of the original casing and have full volume control. The KY040 pushbutton allows for creating another event based home assistant automation. in combination with the existing respeaker lite pushbutton, this allows for 7 events from the pushbuttons on the media player! (1 single press, 2 double presses, 2 triple presses and 2 long presses)
+# UPDATE: I have managed to include the Koala KY040 encoder to allow the use of the original casing and have full volume control. The KY040 pushbutton allows for creating another event based home assistant automation. in combination with the existing respeaker lite pushbutton automation, this allows for up to 7 events from the pushbuttons on the media player f9r home assistantto respond to! (1 single press, 2 double presses, 2 triple presses and 2 long presses)
 
 # To accomplish this I have added a d1 mini to control the koala KY040 encoder.
 The D1 mini is inside the koala case, and communicates with the koala media controller via home assistant.  
