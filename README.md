@@ -7,7 +7,7 @@
  <img src="/casing/images/koala1.jpg" width="400">
 Watch the video of respeaker in action with music assistant: Don't be too concerned about response time, my internet is slow.... (https://www.youtube.com/shorts/Wk3J1GyNItQ)
 
-# UPDATE: I have managed to include the Koala KY040 encoder to allow the use of the original casing and have full volume control as well as another event based pushbutton for use in home assistant automations
+# UPDATE: I have managed to include the Koala KY040 encoder to allow the use of the original casing and have full volume control. The KY040 pushbutton allows for creating an event based home assistant automation.
 
 # To accomplish this I have added a d1 mini to control the koala KY040 encoder.
 The D1 mini is inside the koala case, and communicates with the koala media controller via home assistant.  
