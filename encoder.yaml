@@ -61,8 +61,7 @@ binary_sensor:
       # press and hold
       #  . Exposed as an event entity. To be used in automations inside Home Assistant
     - timing:
-      - ON for .5s to 5s
-      - OFF for at least 0.1s
+      - ON for at least 1s
       then:
 
         - homeassistant.service:
