@@ -1,0 +1,142 @@
+alias: voice commands for koala
+description: A set 9f custom sentences for koala
+triggers:
+  - trigger: conversation
+    command:
+      - "[Play] [start]CBC [radio] [one] [kingston]"
+    id: Start CBC Radio
+  - trigger: conversation
+    command: "[Play] [start] dinner music"
+    id: Dinner music
+  - trigger: conversation
+    command: Stop playing [music] [radio]
+    id: Stop playing
+  - trigger: conversation
+    command:
+      - Kitchen lights [ lights] [on]
+    id: Kitchen lights
+  - trigger: conversation
+    command: Kitchen lights [lights] off
+    id: Kitchen lights off
+  - trigger: conversation
+    command: Stop [all] [media] [players] [ player]
+    id: Stop media players
+  - trigger: conversation
+    command:
+      - bedtime music
+    id: bedtime music
+conditions: []
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id:
+              - Start CBC Radio
+        sequence:
+          - action: media_player.play_media
+            metadata:
+              title: CBC Radio One - Kingston, ON (MP3 stream)
+              thumbnail: >-
+                https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/CBCRadioOne.svg/320px-CBCRadioOne.svg.png
+              media_class: music
+              children_media_class: null
+              navigateIds:
+                - {}
+                - media_content_type: music_assistant
+                  media_content_id: radio
+            data:
+              media_content_id: library://radio/2
+              media_content_type: music
+            target:
+              entity_id: " {{ (voice_assistant_device) }} "
+      - conditions:
+          - condition: trigger
+            id:
+              - Dinner music
+        sequence:
+          - target:
+              entity_id: " {{ (voice_assistant_device) }}"
+            data:
+              shuffle: true
+            action: media_player.shuffle_set
+          - action: media_player.play_media
+            metadata:
+              title: Coffeehouse Instrumental Acoustic Covers
+              thumbnail: null
+              media_class: playlist
+              children_media_class: track
+              navigateIds:
+                - {}
+                - media_content_type: music_assistant
+                  media_content_id: playlists
+                - media_content_type: music
+                  media_content_id: library://playlist/48
+            data:
+              media_content_id: library://playlist/48
+              media_content_type: playlist
+            target:
+              entity_id: "{{ (voice_assistant_device) }}"
+          - target:
+              entity_id: " {{ (voice_assistant_device) }}"
+            data:
+              shuffle: true
+            action: media_player.shuffle_set
+      - conditions:
+          - condition: trigger
+            id:
+              - Stop playing
+        sequence:
+          - action: media_player.media_stop
+            metadata: {}
+            data: {}
+            target:
+              entity_id: " {{ (voice_assistant_device) }} "
+      - conditions:
+          - condition: trigger
+            id:
+              - Kitchen lights
+        sequence:
+          - action: light.turn_on
+            metadata: {}
+            data: {}
+            target:
+              entity_id:
+                - light.kitchen_undercounter_lights
+                - light.kitchen_lightgroup
+      - conditions:
+          - condition: trigger
+            id:
+              - Kitchen lights off
+        sequence:
+          - action: light.turn_off
+            metadata: {}
+            data: {}
+            target:
+              area_id: kitchen
+      - conditions:
+          - condition: trigger
+            id:
+              - Stop media players
+        sequence:
+          - action: script.turn_on
+            metadata: {}
+            data: {}
+            target:
+              entity_id: script.1687535390894
+      - conditions:
+          - condition: trigger
+            id:
+              - bedtime music
+        sequence:
+          - action: script.turn_on
+            metadata: {}
+            data: {}
+            target:
+              entity_id: script.bedtime_music
+variables:
+  media_player_id: " {{ trigger.device_id }} "
+  media_player: " {{ device_entities(media_player_id) |select('search','^media_player.')|first }} "
+  friendly_name: " {{ states[media_player]['attributes']['friendly_name'] }} "
+  prepend: media_player.
+  voice_assistant_device: " {{ prepend ~ (friendly_name) | slugify}} "
+mode: single
