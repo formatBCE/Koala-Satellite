@@ -1,8 +1,8 @@
-# This fork is for those people who have a respeaker lite with soldered xiao esp32-s3 and wish to use the Koala case with the led light ring.
+ # This fork is for those people who have a respeaker lite with soldered xiao esp32-s3 and wish to use the Koala case with the led light ring.
 ## To accomplish this:
    1. Print the newfaceplate.step file. As the esp32 does not support the use of the volume control, this removes that control and adds a home assistant logo.
    2. Solder the led strip to pin 1 of the esp32 and the 5V and ground pads on the side of the respeaker lite
-   3. Use the included newyaml.yaml file in home assistant. Add your encryption key to the file and change the name to anything you desire.
+   3. Use the modified koala-base.yaml file in home assistant. Change the name to anything you desire.
    4. That's it, enjoy the improved sound and HA lighting control of koala!
  <img src="/casing/images/koala1.jpg" width="400">
 Watch the video of respeaker in action with music assistant: Don't be too concerned about response time, my internet is slow.... (https://www.youtube.com/shorts/Wk3J1GyNItQ)
