@@ -20,7 +20,7 @@ substitutions:
 esphome:
   project: 
     name: formatbce.Koala Satellite
-    version: 2025.2.1
+    version: 2025.2.2
   name: koala-satellite
   friendly_name: Koala Satellite
   name_add_mac_suffix: true
@@ -79,6 +79,7 @@ logger:
   initial_level: debug
   logs:
     sensor: WARN  # avoids logging debug sensor updates
+#  hardware_uart: uart0  #Uncomment to see serial logs via USB connection. Comment out after debufgging - this line introduces noise on speaker...
 
 select:
   - platform: logger
@@ -1358,6 +1359,40 @@ respeaker_lite:
     name: XMOS firmware version
     internal: false
     id: firmware_version
+  firmware:
+    url: https://github.com/formatBCE/Respeaker-Lite-ESPHome-integration/raw/refs/heads/main/respeaker_lite_i2s_dfu_firmware_48k_v1.1.0.bin
+    version: "1.1.0"
+    md5: 9297155d1bf3eb21a9d4db52a89ea0c6
+    on_begin:
+      - light.turn_on:
+          brightness: 50%
+          red: 50%
+          green: 50%
+          blue: 50%
+          id: led_respeaker_onboard
+          effect: "Slow Pulse"
+    on_end:
+      - light.turn_on:
+          brightness: 50%
+          red: 0%
+          green: 100%
+          blue: 0%
+          id: led_respeaker_onboard
+          effect: "Fast Pulse"
+      - delay: 3s
+      - light.turn_off:
+          id: led_respeaker_onboard
+    on_error:
+      - light.turn_on:
+          brightness: 50%
+          red: 100%
+          green: 0%
+          blue: 0%
+          id: led_respeaker_onboard
+          effect: "Fast Pulse"
+      - delay: 3s
+      - light.turn_off:
+          id: led_respeaker_onboard
 
 external_components:
   - source:
