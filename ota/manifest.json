@@ -1,16 +1,16 @@
 {
   "name": "Koala Satellite",
-  "version": "2025.2.0",
+  "version": "2025.2.2",
   "home_assistant_domain": "esphome",
   "new_install_prompt_erase": false,
   "builds": [
     {
       "chipFamily": "ESP32-S3",
       "ota": {
-        "md5": "e52323826c9f4bdb3da05c2a49b5ce60",
+        "md5": "8766ec3285d3378e0aed8993ef52a70d",
         "path": "koala-ota.bin",
         "release_url": "https://github.com/formatBCE/Koala-Satellite",
-        "summary": "Changes related to 2025.2.0. More stable LED work. Changed animations."
+        "summary": "Respeaker firmware auto-update. Proper channels for VA and MWW."
       }
     }
   ]
