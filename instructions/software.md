@@ -7,6 +7,10 @@ To flash Respeaker board with correct software, you can use [included sowtware](
 
 #### _Please re-insert the board after flash and make sure that displayed version is correct one._
 
+### DFU software auto-update
+Since version 2025.2.2, the Koala firmware includes corresponding DFU firmware for Respeaker Lite board. On first start after update, new firmware will be installed to Respeaker automatically. You will see Respeaker LED flashing yellow, while installing, and green on successful install.
+So now there's no need to update DFU firmware. Woohoo!
+
 ### Flashing ESPHome configuration to ESP32-S3 board
 
 #### Factory flashing
