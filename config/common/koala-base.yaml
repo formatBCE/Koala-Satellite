@@ -20,7 +20,7 @@ substitutions:
 esphome:
   project: 
     name: formatbce.Koala Satellite
-    version: 2025.2.0
+    version: 2025.2.2
   name: koala-satellite
   friendly_name: Koala Satellite
   name_add_mac_suffix: true
@@ -79,7 +79,7 @@ logger:
   initial_level: debug
   logs:
     sensor: WARN  # avoids logging debug sensor updates
-
+#  hardware_uart: uart0  #Uncomment to see serial logs via USB connection. Comment out after debufgging - this line introduces noise on speaker...
 select:
   - platform: logger
     id: logger_select
@@ -1117,9 +1117,11 @@ microphone:
     i2s_mode: secondary
     i2s_audio_id: i2s_input
     channel_0:
-      id: nabu_mic_mww
-    channel_1:
       id: nabu_mic_va
+      amplify_shift: 0
+    channel_1:
+      id: nabu_mic_mww
+      amplify_shift: 2
       
 speaker:
   # Hardware speaker output
@@ -1162,7 +1164,7 @@ speaker:
 media_player:
   - platform: speaker
     id: external_media_player
-    name: None
+    name: Media Player
     internal: False
     volume_increment: 0.05
     volume_min: 0.4
@@ -1237,6 +1239,42 @@ respeaker_lite:
     name: XMOS firmware version
     internal: false
     id: firmware_version
+
+  firmware:
+    url: https://github.com/formatBCE/Respeaker-Lite-ESPHome-integration/raw/refs/heads/main/respeaker_lite_i2s_dfu_firmware_48k_v1.1.0.bin
+    version: "1.1.0"
+    md5: 9297155d1bf3eb21a9d4db52a89ea0c6
+    on_begin:
+      - light.turn_on:
+          brightness: 50%
+          red: 100%
+          green: 100%
+          blue: 0%
+          id: led_ring
+          effect: "Twinkle"
+          
+    on_end:
+      - light.turn_on:
+          brightness: 50%
+          red: 0%
+          green: 100%
+          blue: 0%
+          id: led_ring
+          effect: "Twinkle"
+      - delay: 3s
+      - light.turn_off:
+          id: led_ring
+    on_error:
+      - light.turn_on:
+          brightness: 50%
+          red: 100%
+          green: 0%
+          blue: 0%
+          id: led_ring
+          effect: "Error"
+      - delay: 3s
+      - light.turn_off:
+          id: led_ring
 
 external_components:
   - source:
