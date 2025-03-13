@@ -1,16 +1,16 @@
 {
   "name": "Koala Satellite",
-  "version": "2025.2.2",
+  "version": "2025.3.0",
   "home_assistant_domain": "esphome",
   "new_install_prompt_erase": false,
   "builds": [
     {
       "chipFamily": "ESP32-S3",
       "ota": {
-        "md5": "8766ec3285d3378e0aed8993ef52a70d",
+        "md5": "b66bfc607729f8cccc068aa2a3ad496e",
         "path": "koala-ota.bin",
         "release_url": "https://github.com/formatBCE/Koala-Satellite",
-        "summary": "Respeaker firmware auto-update. Proper channels for VA and MWW."
+        "summary": "Granular volume control. Fix for media player entity ID. VAD probability cut-off lowered down to decrease wake word false-negatives."
       }
     }
   ]
