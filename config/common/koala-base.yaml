@@ -20,7 +20,7 @@ substitutions:
 esphome:
   project: 
     name: formatbce.Koala Satellite
-    version: 2025.2.2
+    version: 2025.3.0
   name: koala-satellite
   friendly_name: Koala Satellite
   name_add_mac_suffix: true
@@ -778,7 +778,7 @@ sensor:
     id: dial
     pin_a: GPIO47
     pin_b: GPIO21
-    resolution: 2
+    resolution: 1
     on_clockwise:
       - lambda: id(dial_touched) = true;
       - if:
@@ -901,9 +901,9 @@ script:
           then:
             - light.turn_on:
                 brightness: 50%
-                red: 9.4%
-                green: 73.3%
-                blue: 94.9%
+                red: 9%
+                green: 73%
+                blue: 95%
                 id: voice_assistant_leds
                 effect: "Twinkle"
           else:
@@ -1284,7 +1284,7 @@ speaker:
 media_player:
   - platform: speaker
     id: external_media_player
-    name: Media Player
+    name: None
     internal: False
     volume_increment: 0.05
     volume_min: 0.4
@@ -1438,6 +1438,7 @@ micro_wake_word:
       id: stop
       internal: true
   vad:
+    probability_cutoff: 0.05
   microphone: nabu_mic_mww
   on_wake_word_detected:
     # If the wake word is detected when the device is muted (Possible with the software mute switch): Do nothing
