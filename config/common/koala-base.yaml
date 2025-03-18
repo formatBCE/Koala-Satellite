@@ -825,9 +825,9 @@ script:
           then:
             - light.turn_on:
                 brightness: 50%
-                red: 9.4%
-                green: 73.3%
-                blue: 94.9%
+                red: 9%
+                green: 73%
+                blue: 95%
                 id: voice_assistant_leds
                 effect: "Twinkle"
           else:
@@ -1164,7 +1164,7 @@ speaker:
 media_player:
   - platform: speaker
     id: external_media_player
-    name: Media Player
+    name: media_player
     internal: False
     volume_increment: 0.05
     volume_min: 0.4
@@ -1320,6 +1320,7 @@ micro_wake_word:
       id: stop
       internal: true
   vad:
+    probability_cutoff: 0.05
   microphone: nabu_mic_mww
   on_wake_word_detected:
     # If the wake word is detected when the device is muted (Possible with the software mute switch): Do nothing
