@@ -135,7 +135,7 @@ sensor:
     id: knob_koala_two
     pin_a: 4
     pin_b: 5
-
+    resolution: 1
     on_clockwise:
       - homeassistant.service:
           service: media_player.volume_set
