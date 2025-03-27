@@ -7,10 +7,10 @@
     {
       "chipFamily": "ESP32-S3",
       "ota": {
-        "md5": "b66bfc607729f8cccc068aa2a3ad496e",
+        "md5": "b55c97dd9c2a07a5dd8620fa94206343",
         "path": "koala-ota.bin",
         "release_url": "https://github.com/formatBCE/Koala-Satellite",
-        "summary": "Granular volume control. Fix for media player entity ID. VAD probability cut-off lowered down to decrease wake word false-negatives."
+        "summary": "Ready for continuous conversation (HA version >= 2025.04). ESPHome 2025.3.2. Improved wake/stop word detection."
       }
     }
   ]
