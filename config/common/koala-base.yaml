@@ -20,11 +20,11 @@ substitutions:
 esphome:
   project: 
     name: formatbce.Koala Satellite
-    version: 2025.3.1
+    version: 2025.4.0
   name: koala-satellite
   friendly_name: Koala Satellite
   name_add_mac_suffix: true
-  min_version: 2025.3.2
+  min_version: 2025.3.3
   on_boot:
     priority: 375
     then:
@@ -1347,6 +1347,8 @@ media_player:
         file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/timer_finished.flac
       - id: wake_word_triggered_sound
         file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/wake_word_triggered.flac
+      - id: error_cloud_expired
+        file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/error_cloud_expired.mp3
 
 respeaker_lite:
   id: respeaker
@@ -1498,15 +1500,26 @@ voice_assistant:
     - lambda: id(voice_assistant_phase) = ${voice_assist_not_ready_phase_id};
     - script.execute: control_leds
   on_error:
-    - if:
-        condition:
-          and:
-            - lambda: return !id(init_in_progress);
-            - lambda: return code != "duplicate_wake_up_detected";
-            - lambda: return code != "stt-no-text-recognized";
-        then:
-          - lambda: id(voice_assistant_phase) = ${voice_assist_error_phase_id};
-          - script.execute: control_leds
+     # Only set the error phase if the error code is different than duplicate_wake_up_detected or stt-no-text-recognized
+     # These two are ignored for a better user experience
+     - if:
+         condition:
+           and:
+             - lambda: return !id(init_in_progress);
+             - lambda: return code != "duplicate_wake_up_detected";
+             - lambda: return code != "stt-no-text-recognized";
+         then:
+           - lambda: id(voice_assistant_phase) = ${voice_assist_error_phase_id};
+           - script.execute: control_leds
+     # If the error code is cloud-auth-failed, serve a local audio file guiding the user.
+     - if:
+         condition:
+           - lambda: return code == "cloud-auth-failed";
+         then:
+           - script.execute:
+               id: play_sound
+               priority: true
+               sound_file: !lambda return id(error_cloud_expired);
   # When the voice assistant starts: Play a wake up sound, duck audio.
   on_start:
     - mixer_speaker.apply_ducking:
