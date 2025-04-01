@@ -1,16 +1,16 @@
 {
   "name": "Koala Satellite",
-  "version": "2025.3.1",
+  "version": "2025.4.0",
   "home_assistant_domain": "esphome",
   "new_install_prompt_erase": false,
   "builds": [
     {
       "chipFamily": "ESP32-S3",
       "ota": {
-        "md5": "b55c97dd9c2a07a5dd8620fa94206343",
+        "md5": "6385a346fe1145035c1406c7bbde1d3b",
         "path": "koala-ota.bin",
         "release_url": "https://github.com/formatBCE/Koala-Satellite",
-        "summary": "Ready for continuous conversation (HA version >= 2025.04). ESPHome 2025.3.2. Improved wake/stop word detection."
+        "summary": "ESPHome 2025.3.3. Added Cloud auth expiration sound (feature parity with Voice PE). Some improvements to the announcements in media player."
       }
     }
   ]
