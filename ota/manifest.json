@@ -10,7 +10,7 @@
         "md5": "6385a346fe1145035c1406c7bbde1d3b",
         "path": "koala-ota.bin",
         "release_url": "https://github.com/formatBCE/Koala-Satellite",
-        "summary": "ESPHome 2025.3.3. Added Cloud auth expiration sound (feature parity with Voice PE). Some improvements to the announcements in media player."
+        "summary": "ESPHome 2025.3.3. Added Cloud error sound (feature parity with Voice PE). Some improvements to the announcements in media player."
       }
     }
   ]
