@@ -7,10 +7,10 @@
     {
       "chipFamily": "ESP32-S3",
       "ota": {
-        "md5": "6385a346fe1145035c1406c7bbde1d3b",
+        "md5": "d66aa56b416156df694233ed9f2d1c55",
         "path": "koala-ota.bin",
         "release_url": "https://github.com/formatBCE/Koala-Satellite",
-        "summary": "ESPHome 2025.3.3. Added Cloud error sound (feature parity with Voice PE). Some improvements to the announcements in media player."
+        "summary": "Alarm functionality. Some improvements in media player stop handling. TTS URI replaced with event (!)"
       }
     }
   ]
