@@ -30,4 +30,7 @@ There's two configurations available: [dashboard](/config/koala-dashboard.yaml) 
 _**(When asked to authorize by pressing button on device, use small round button!)**_
 - The voice satellite onboarding wizard will help you setup the pipeline and wake word.
 
+### Using the alarm functionality.
+Since 2025.4.1, the device has built-in alarm, that you can setup and use in your smart home. Check [this short tutorial](https://github.com/formatBCE/Respeaker-Lite-ESPHome-integration/blob/ae414e06fea8334e726837d5dbe72a55645b3445/readme/alarms.md) on how to set it up!
+
 ### _Happy tinkering!_
