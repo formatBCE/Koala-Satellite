@@ -1,16 +1,16 @@
 {
   "name": "Koala Satellite",
-  "version": "2025.4.1",
+  "version": "2025.4.2",
   "home_assistant_domain": "esphome",
   "new_install_prompt_erase": false,
   "builds": [
     {
       "chipFamily": "ESP32-S3",
       "ota": {
-        "md5": "d66aa56b416156df694233ed9f2d1c55",
+        "md5": "e306891274fd593509468192260bdebc",
         "path": "koala-ota.bin",
         "release_url": "https://github.com/formatBCE/Koala-Satellite",
-        "summary": "Alarm functionality. Some improvements in media player stop handling. TTS URI replaced with event (!)"
+        "summary": "Fix for non-set alarm crash. Some PE improvements. STT event added."
       }
     }
   ]
