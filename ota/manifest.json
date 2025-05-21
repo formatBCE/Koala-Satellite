@@ -1,16 +1,16 @@
 {
   "name": "Koala Satellite",
-  "version": "2025.4.2",
+  "version": "2025.5.0",
   "home_assistant_domain": "esphome",
   "new_install_prompt_erase": false,
   "builds": [
     {
       "chipFamily": "ESP32-S3",
       "ota": {
-        "md5": "e306891274fd593509468192260bdebc",
+        "md5": "4ad0b90b0e4d835668a5c57569fe1529",
         "path": "koala-ota.bin",
-        "release_url": "https://github.com/formatBCE/Koala-Satellite/releases/tag/2025.4.2",
-        "summary": "Fix for non-set alarm crash. Some PE improvements. STT event added."
+        "release_url": "https://github.com/formatBCE/Koala-Satellite/releases/tag/2025.5.0",
+        "summary": "Adjustments for ESPHome 2025.5.0. New wake word Kenobi. Memory optimization."
       }
     }
   ]
