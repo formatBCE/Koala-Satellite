@@ -20,11 +20,11 @@ substitutions:
 esphome:
   project: 
     name: formatbce.Koala Satellite
-    version: 2025.4.2
+    version: 2025.5.0
   name: koala-satellite
   friendly_name: Koala Satellite
   name_add_mac_suffix: true
-  min_version: 2025.3.3
+  min_version: 2025.5.0
   on_boot:
     - priority: 375
       then:
@@ -59,16 +59,22 @@ esphome:
 
 esp32:
   board: esp32-s3-devkitc-1
+  cpu_frequency: 240MHz
   variant: esp32s3
   flash_size: 16MB
   framework:
     type: esp-idf
     version: recommended
     sdkconfig_options:
-      CONFIG_ESP32S3_DEFAULT_CPU_FREQ_240: "y"
       CONFIG_ESP32S3_DATA_CACHE_64KB: "y"
       CONFIG_ESP32S3_DATA_CACHE_LINE_64B: "y"
       CONFIG_ESP32S3_INSTRUCTION_CACHE_32KB: "y"
+
+      # Moves instructions and read only data from flash into PSRAM on boot.
+      # Both enabled allows instructions to execute while a flash operation is in progress without needing to be placed in IRAM.
+      # Considerably speeds up mWW at the cost of using more PSRAM.
+      CONFIG_SPIRAM_RODATA: "y"
+      CONFIG_SPIRAM_FETCH_INSTRUCTIONS: "y"
 
       CONFIG_BT_ALLOCATION_FROM_SPIRAM_FIRST: "y"
       CONFIG_BT_BLE_DYNAMIC_ENV_MEMORY: "y"
@@ -327,7 +333,7 @@ switch:
     restore_mode: ALWAYS_OFF
     on_turn_off:
       # Disable stop wake word
-      - lambda: id(stop).disable();
+      - micro_wake_word.disable_model: stop
       - script.execute: disable_repeat
       # Stop any current annoucement (ie: stop the timer ring mid playback)
       - if:
@@ -350,7 +356,7 @@ switch:
           decibel_reduction: 20
           duration: 0.0s
       # Enable stop wake word
-      - lambda: id(stop).enable();
+      - micro_wake_word.enable_model: stop
       # Ring timer
       - script.execute: ring_timer
       # Refresh LED
@@ -1301,7 +1307,7 @@ script:
           condition:
             switch.is_off: timer_ringing
           then:
-            - lambda: id(stop).enable();
+            - micro_wake_word.enable_model: stop
             - wait_until:
                 not:
                   media_player.is_announcing:
@@ -1309,7 +1315,7 @@ script:
                 condition:
                   switch.is_off: timer_ringing
                 then:
-                  - lambda: id(stop).disable();
+                  - micro_wake_word.disable_model: stop
 
   - id: check_alarm
     then:
@@ -1393,7 +1399,8 @@ i2s_audio:
       allow_other_uses: true
 
 microphone:
-  - platform: nabu_microphone
+  - platform: i2s_audio
+    id: i2s_mics
     i2s_din_pin: GPIO44
     adc_type: external
     pdm: false
@@ -1401,12 +1408,7 @@ microphone:
     bits_per_sample: 32bit
     i2s_mode: secondary
     i2s_audio_id: i2s_input
-    channel_0:
-      id: nabu_mic_va
-      amplify_shift: 0
-    channel_1:
-      id: nabu_mic_mww
-      amplify_shift: 2
+    channel: stereo
       
 speaker:
   # Hardware speaker output
@@ -1564,19 +1566,10 @@ respeaker_lite:
 external_components:
   - source:
       type: git
-      url: https://github.com/esphome/home-assistant-voice-pe
-      ref: dev
+      url: https://github.com/formatBCE/esphome
+      ref: respeaker_microphone
     components:
-      - micro_wake_word
-      - microphone
-      - voice_assistant
-    refresh: 0s
-  - source:
-      type: git
-      url: https://github.com/formatBCE/home-assistant-voice-pe
-      ref: 48kHz_mic_support
-    components:
-      - nabu_microphone
+      - i2s_audio
     refresh: 0s
   - source:
       type: git
@@ -1593,10 +1586,17 @@ audio_dac:
 
 micro_wake_word:
   id: mww
+  microphone:
+    microphone: i2s_mics
+    channels: 1
+    gain_factor: 4
+  stop_after_detection: false
   models:
     - model: https://github.com/kahrendt/microWakeWord/releases/download/okay_nabu_20241226.3/okay_nabu.json
       # probability_cutoff: 0.8
       id: okay_nabu
+    - model: https://raw.githubusercontent.com/formatBCE/Respeaker-Lite-ESPHome-integration/refs/heads/main/microwakeword/models/v2/kenobi.json
+      id: kenobi
     - model: hey_jarvis
       id: hey_jarvis
     - model: hey_mycroft
@@ -1606,7 +1606,6 @@ micro_wake_word:
       internal: true
   vad:
     probability_cutoff: 0.05
-  microphone: nabu_mic_mww
   on_wake_word_detected:
     # If the wake word is detected when the device is muted (Possible with the software mute switch): Do nothing
     - if:
@@ -1650,7 +1649,9 @@ micro_wake_word:
 
 voice_assistant:
   id: va
-  microphone: nabu_mic_va
+  microphone:
+    microphone: i2s_mics
+    channels: 0
   media_player: external_media_player
   micro_wake_word: mww
   use_wake_word: false
