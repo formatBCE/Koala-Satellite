@@ -60,6 +60,7 @@ esphome:
 
 esp32:
   board: esp32-s3-devkitc-1
+  cpu_frequency: 240MHz
   variant: esp32s3
   flash_size: 8MB
   framework:
@@ -70,6 +71,14 @@ esp32:
       CONFIG_ESP32S3_DATA_CACHE_64KB: "y"
       CONFIG_ESP32S3_DATA_CACHE_LINE_64B: "y"
       CONFIG_ESP32S3_INSTRUCTION_CACHE_32KB: "y"
+
+
+      # Moves instructions and read only data from flash into PSRAM on boot.
+      # Both enabled allows instructions to execute while a flash operation is in progress without needing to be placed in IRAM.
+      # Considerably speeds up mWW at the cost of using more PSRAM.
+      CONFIG_SPIRAM_RODATA: "y"
+      CONFIG_SPIRAM_FETCH_INSTRUCTIONS: "y"
+
 
       CONFIG_BT_ALLOCATION_FROM_SPIRAM_FIRST: "y"
       CONFIG_BT_BLE_DYNAMIC_ENV_MEMORY: "y"
@@ -326,7 +335,7 @@ switch:
     restore_mode: ALWAYS_OFF
     on_turn_off:
       # Disable stop wake word
-      - lambda: id(stop).disable();
+      - micro_wake_word.disable_model: stop
       - script.execute: disable_repeat
       # Stop any current annoucement (ie: stop the timer ring mid playback)
       - if:
@@ -349,7 +358,7 @@ switch:
           decibel_reduction: 20
           duration: 0.0s
       # Enable stop wake word
-      - lambda: id(stop).enable();
+      - micro_wake_word.enable_model: stop
       # Ring timer
       - script.execute: ring_timer
       # Refresh LED
@@ -1172,11 +1181,24 @@ script:
   # Why is this wrapped on a script?
   #   Becasue we want to stop the sequence if the TTS step is faster than that.
   #   This allows us to prevent having the deactivation of the stop word before its own activation.
-  - id: activate_stop_word_if_tts_step_is_long
+  - id: activate_stop_word_once
     then:
       - delay: 1s
       # Enable stop wake word
-      - lambda: id(stop).enable();
+      - if:
+          condition:
+            switch.is_off: timer_ringing
+          then:
+            - lambda: id(stop).enable();
+            - wait_until:
+                not:
+                  media_player.is_announcing:
+            - if:
+                condition:
+                  switch.is_off: timer_ringing
+                then:
+                  - lambda: id(stop).disable();
+
 
   - id: check_alarm
     then:
@@ -1186,25 +1208,37 @@ script:
           if (id(alarm_on).state && id(alarm_time).has_state()) {
           // Get the stored alarm time from the sensor
             auto set_alarm_time = id(alarm_time).state;
-            auto alarm_hour = std::stoi(set_alarm_time.substr(0, 2));
-            auto alarm_minute = std::stoi(set_alarm_time.substr(3, 2));
+            if (set_alarm_time.length() == 5 &&
+              isdigit(set_alarm_time[0]) && isdigit(set_alarm_time[1]) &&
+              isdigit(set_alarm_time[3]) && isdigit(set_alarm_time[4])) {
+              auto alarm_hour = std::stoi(set_alarm_time.substr(0, 2));
+              auto alarm_minute = std::stoi(set_alarm_time.substr(3, 2));
  
-            // Trigger action if current time matches alarm time
-            auto time_now = id(homeassistant_time).now();
-            if (time_now.hour == alarm_hour && time_now.minute == alarm_minute) {
-              auto action = id(alarm_action).state;
-              ESP_LOGI("time_debug", "Action: %s", action.c_str());
-              if (action == "Play sound") {
-                id(timer_ringing).turn_on();
-              } else if (action == "Send event") {
-                ESP_LOGI("time_debug", "Sending event");
-                id(send_alarm_event).execute();
-              } else if (action == "Sound and event") {
-                id(timer_ringing).turn_on();
-                id(send_alarm_event).execute();
-              } 
+              // Trigger action if current time matches alarm time
+              auto time_now = id(homeassistant_time).now();
+              if (time_now.hour == alarm_hour && time_now.minute == alarm_minute) {
+                auto action = id(alarm_action).state;
+                if (action == "Play sound") {
+                  id(timer_ringing).turn_on();
+                } else if (action == "Send event") {
+                  id(send_alarm_event).execute();
+                } else if (action == "Sound and event") {
+                  id(timer_ringing).turn_on();
+                  id(send_alarm_event).execute();
+                } 
+              }
+            } else {
+              ESP_LOGW("alarm", "Incorrect alarm time setting");
             }
           }
+  - id: send_stt_text_event
+    parameters:
+      stt_text: string
+    then:
+      - homeassistant.event:
+          event: esphome.stt_text
+          data:
+            text: !lambda return stt_text;
   - id: send_alarm_event
     then:
       - homeassistant.event:
@@ -1248,7 +1282,8 @@ i2s_audio:
       allow_other_uses: true
 
 microphone:
-  - platform: nabu_microphone
+  - platform: i2s_audio
+    id: i2s_mics
     i2s_din_pin: GPIO44
     adc_type: external
     pdm: false
@@ -1256,12 +1291,7 @@ microphone:
     bits_per_sample: 32bit
     i2s_mode: secondary
     i2s_audio_id: i2s_input
-    channel_0:
-      id: nabu_mic_va
-      amplify_shift: 0
-    channel_1:
-      id: nabu_mic_mww
-      amplify_shift: 2
+    channel: stereo
       
 speaker:
   # Hardware speaker output
@@ -1421,19 +1451,10 @@ respeaker_lite:
 external_components:
   - source:
       type: git
-      url: https://github.com/esphome/home-assistant-voice-pe
-      ref: dev
+      url: https://github.com/formatBCE/esphome
+      ref: respeaker_microphone
     components:
-      - micro_wake_word
-      - microphone
-      - voice_assistant
-    refresh: 0s
-  - source:
-      type: git
-      url: https://github.com/formatBCE/home-assistant-voice-pe
-      ref: 48kHz_mic_support
-    components:
-      - nabu_microphone
+      - i2s_audio
     refresh: 0s
   - source:
       type: git
@@ -1450,10 +1471,17 @@ audio_dac:
 
 micro_wake_word:
   id: mww
+  microphone:
+    microphone: i2s_mics
+    channels: 1
+    gain_factor: 4
+  stop_after_detection: false
   models:
     - model: https://github.com/kahrendt/microWakeWord/releases/download/okay_nabu_20241226.3/okay_nabu.json
       # probability_cutoff: 0.8
       id: okay_nabu
+    - model: https://raw.githubusercontent.com/formatBCE/Respeaker-Lite-ESPHome-integration/refs/heads/main/microwakeword/models/v2/kenobi.json
+      id: kenobi
     - model: hey_jarvis
       id: hey_jarvis
     - model: hey_mycroft
@@ -1463,7 +1491,7 @@ micro_wake_word:
       internal: true
   vad:
     probability_cutoff: 0.05
-  microphone: nabu_mic_mww
+
   on_wake_word_detected:
     # If the wake word is detected when the device is muted (Possible with the software mute switch): Do nothing
     - if:
@@ -1507,7 +1535,9 @@ micro_wake_word:
 
 voice_assistant:
   id: va
-  microphone: nabu_mic_va
+  microphone:
+    microphone: i2s_mics
+    channels: 0
   media_player: external_media_player
   micro_wake_word: mww
   use_wake_word: false
@@ -1569,11 +1599,15 @@ voice_assistant:
     - lambda: id(voice_assistant_phase) = ${voice_assist_replying_phase_id};
     - script.execute: control_leds
     # Start a script that would potentially enable the stop word if the response is longer than a second
-    - script.execute: activate_stop_word_if_tts_step_is_long
+    - script.execute: activate_stop_word_once
   on_tts_end:
     - script.execute:
         id: send_tts_uri_event
         tts_uri: !lambda 'return x;'
+  on_stt_end:
+    - script.execute:
+        id: send_stt_text_event
+        stt_text: !lambda 'return x;'
   # When the voice assistant ends ...
   on_end:
     - wait_until:
@@ -1584,14 +1618,7 @@ voice_assistant:
         id: media_mixing_input
         decibel_reduction: 0
         duration: 1.0s
-    # Stop the script that would potentially enable the stop word if the response is longer than a second
-    - script.stop: activate_stop_word_if_tts_step_is_long
-    # Disable the stop word (If the timer is not ringing)
-    - if:
-        condition:
-          switch.is_off: timer_ringing
-        then:
-          - lambda: id(stop).disable();
+
     # If the end happened because of an error, let the error phase on for a second
     - if:
         condition:
