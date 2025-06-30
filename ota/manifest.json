@@ -1,16 +1,16 @@
 {
   "name": "Koala Satellite",
-  "version": "2025.6.0",
+  "version": "2025.7.0",
   "home_assistant_domain": "esphome",
   "new_install_prompt_erase": false,
   "builds": [
     {
       "chipFamily": "ESP32-S3",
       "ota": {
-        "md5": "3f2b742f156e244ca6e15e584bf694eb",
+        "md5": "0b142e029af3097a2e3dc9660ccae8d1",
         "path": "koala-ota.bin",
         "release_url": "https://github.com/formatBCE/Koala-Satellite/releases/tag/2025.5.0",
-        "summary": "Adjustments for ESPHome 2025.5.2. Wake word sensitivity setting (doesn't work for Kenobi). IPV6 enabled."
+        "summary": "ESPHome 2025.6.2. Streaming TTS readiness."
       }
     }
   ]
