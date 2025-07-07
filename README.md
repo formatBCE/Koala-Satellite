@@ -29,7 +29,7 @@ Koala is just something you can assemble yourself from widely accessible parts.
 Also it has pretty decent for size audio speaker and doesn't have external sensors connectors.
 
 #### How is it different from [this repository](https://github.com/formatBCE/Respeaker-Lite-ESPHome-integration)?
-I started to work with [Respeaker Lite](https://www.seeedstudio.com/ReSpeaker-Lite-p-5928.html) several months ago. 
+I started to work with [Respeaker Lite](https://www.seeedstudio.com/ReSpeaker-Lite-p-5928.html) in the Fall of 2024. 
 That repository was my attempt to put everything i know together.
 All the process is pretty much documented in [this Home Assistant Community thread](https://community.home-assistant.io/t/respeaker-lite-new-seeed-studio-voice-assistant-development-kit-hardware-combine-esp32-with-xmos-xu316-dsp-chip-for-advanced-audio-processing-as-a-esphome-based-home-assistant-assist-satellite-voice-devkit).
 At some point i made Echo-Pop-like enclosure to the Respeaker Lite Kit. But it had disadvantages, like gluing face plate (or fabric), no access to ESP and Respeaker USB ports, lack of volume controls and rudimentary LED.
