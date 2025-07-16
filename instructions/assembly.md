@@ -28,6 +28,7 @@ _HINT: If you print with dark/non-translucent filament, consider printing face p
 - Use rubber pads for casing legs. It will greatly reduce vibrations and will make sound undisputably better!
 
 ### Prepare guts
+#### Thanks to [@rodrigo](https://github.com/rodrigosiviero), we have full [wiring diagram on Cirkit](https://app.cirkitdesigner.com/project/69192877-c1b3-4971-989a-3abfdbbd7a87). Check it out!
 - Bridge buttons on Respeaker Lite to corresponding pins (`USR` to `D2`, `Mute` to `D3`). _**ATTENTION! This step is mandatory, as without it the buttons on Koala won't work as intended.**_
 - Some ESP32-S3 boards have `IN-OUT` and `RGB` bridges, that aren't bridged. Bridge them with solder. **(Hint: `IN-OUT` enables 5V pin, and `RGB` pad makes onboard LED working.)**
 - You may use Respeaker Lite JST connector for speaker directly. But it's pretty inconvenient with my enclosure. So i do the following (feel free to skip this if you don't want to hassle):
