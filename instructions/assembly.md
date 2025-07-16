@@ -29,9 +29,10 @@ _HINT: If you print with dark/non-translucent filament, consider printing face p
 
 ### Prepare guts
 - Bridge buttons on Respeaker Lite to corresponding pins (`USR` to `D2`, `Mute` to `D3`). _**ATTENTION! This step is mandatory, as without it the buttons on Koala won't work as intended.**_
-- Some ESP32-S3 boards have `IN-OUT` and `RGB` bridges, that aren't bridged. Bridge them with solder. **(Hint: `IN-OUT` enables 5V pin, and `RGB` pad makes onboard LED working. You may skip latter, if you don't plan to use LED on th eboard, but don't skip `IN-OUT` pad, unless you're sure that 5V pin on board provides current.)**
-- Solder the male Jst 2.0 Ph 2-Pin Connector to the speaker. Keep the cable short, ~3cm.
-- Solder the female Jst 2.0 Ph 2-Pin Connector to the Respeaker Lite. You will find corresponding pads on Respeaker board near the soldered JST connector (marked + and -). Check the cables polarity. Make the cable long, so it sticks from the bottom of main casing, when Respeaker is on top (~12cm).
+- Some ESP32-S3 boards have `IN-OUT` and `RGB` bridges, that aren't bridged. Bridge them with solder. **(Hint: `IN-OUT` enables 5V pin, and `RGB` pad makes onboard LED working.)**
+- You may use Respeaker Lite JST connector for speaker directly. But it's pretty inconvenient with my enclosure. So i do the following (feel free to skip this if you don't want to hassle):
+    - Solder the male Jst 2.0 Ph 2-Pin Connector to the speaker. Keep the cable short, ~3cm.
+    - Solder the female Jst 2.0 Ph 2-Pin Connector to the Respeaker Lite. You will find corresponding pads on Respeaker board near the soldered JST connector (marked + and -). Check the cables polarity. Make the cable long, so it sticks from the bottom of main casing, when Respeaker is on top (~12cm).
 - Cut 43 LED long piece of WS2812 strip. Make sure it will fit LED diffuser slot nicely. Start from round hole, and move clockwise when placing the strip into diffuser.
 - Solder cables of 3-wire connector male part to the LED strip. Keep these cables ~5cm long. Check the wiring. I prefer to color-code (5v -> red, GND -> black, data -> other colour).
 - Solder cables of 3-wire LED connector female part to the ESP board. Make these cables ~7cm long.
