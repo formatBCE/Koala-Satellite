@@ -1,16 +1,16 @@
 {
   "name": "Koala Satellite",
-  "version": "2025.7.0",
+  "version": "2025.10.0",
   "home_assistant_domain": "esphome",
   "new_install_prompt_erase": false,
   "builds": [
     {
       "chipFamily": "ESP32-S3",
       "ota": {
-        "md5": "0b142e029af3097a2e3dc9660ccae8d1",
+        "md5": "3f001b5693de008788dbf4d79f4f04df",
         "path": "koala-ota.bin",
-        "release_url": "https://github.com/formatBCE/Koala-Satellite/releases/tag/2025.5.0",
-        "summary": "ESPHome 2025.6.2. Streaming TTS readiness."
+        "release_url": "https://github.com/formatBCE/Koala-Satellite/releases/tag/2025.10.0",
+        "summary": "ESPHome 2025.9.3. Fix to mic mute switch behaviour."
       }
     }
   ]
