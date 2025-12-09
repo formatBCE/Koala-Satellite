@@ -28,10 +28,10 @@ substitutions:
 
 esphome:
   project: 
-    name: formatbce.Koala Satellite
+    name: pimmeke1989.Voice Satellite
     version: 2025.10.0
-  name: koala-satellite
-  friendly_name: Koala Satellite
+  name: voice-satellite
+  friendly_name: Voice Satellite
   name_add_mac_suffix: true
   min_version: 2025.9.3
   on_boot:
@@ -70,7 +70,7 @@ esp32:
   board: esp32-s3-devkitc-1
   cpu_frequency: 240MHz
   variant: esp32s3
-  flash_size: 16MB
+  flash_size: 8MB
   framework:
     type: esp-idf
     version: recommended
@@ -185,11 +185,7 @@ globals:
     type: int
     restore_value: no
     initial_value: ${voice_assist_not_ready_phase_id}
-  # Global variable tracking if the dial was recently touched.
-  - id: dial_touched
-    type: bool
-    restore_value: no
-    initial_value: 'false'
+
   # Global variable tracking if the LED color was recently changed.
   - id: color_changed
     type: bool
@@ -363,8 +359,8 @@ switch:
       - script.execute: ring_timer
       # Refresh LED
       - script.execute: control_leds
-      # If 15 minutes have passed and the timer is still ringing, stop it.
-      - delay: 15min
+      # If 10 minutes have passed and the timer is still ringing, stop it.
+      - delay: 10min
       - switch.turn_off: timer_ringing
   # Defines if alarm is active
   - platform: template
@@ -386,221 +382,16 @@ switch:
       then:
         - light.turn_off: led_respeaker_onboard
 
-binary_sensor:
-  # User Button. Used for many things (See on_multi_click)
-  - platform: gpio
-    id: user_button
-    pin:
-      number: GPIO42
-      inverted: true
-    name: "User button"
-    on_press:
-      - script.execute: control_leds
-    on_release:
-      - script.execute: control_leds
-      # If a factory reset is requested, factory reset on release
-      - if:
-          condition:
-            lambda: return id(factory_reset_requested);
-          then:
-            - button.press: factory_reset_button
-    on_multi_click:
-      # Simple Click:
-      #   - Abort "things" in order
-      #     - Timer
-      #     - Announcements
-      #     - Voice Assistant Pipeline run
-      #     - Music
-      #   - Starts the voice assistant if it is not yet running and if the device is not muted.
-      - timing:
-          - ON for at most 1s
-          - OFF for at least 0.25s
-        then:
-          - if:
-              condition:
-                lambda: return !id(init_in_progress) && !id(color_changed);
-              then:
-                - if:
-                    condition:
-                      switch.is_on: timer_ringing
-                    then:
-                      - switch.turn_off: timer_ringing
-                    else:
-                      - if:
-                          condition:
-                            voice_assistant.is_running:
-                          then:
-                            - voice_assistant.stop:
-                          else:
-                            - if:
-                                condition:
-                                  media_player.is_announcing:
-                                then:
-                                  media_player.stop:
-                                    announcement: true
-                                else:
-                                  - if:
-                                      condition:
-                                        media_player.is_playing:
-                                      then:
-                                        - media_player.pause:
-                                      else:
-                                        - if:
-                                            condition:
-                                              and:
-                                                - switch.is_off: mic_mute_switch
-                                                - not:
-                                                    voice_assistant.is_running
-                                            then:
-                                              - if:
-                                                  condition:
-                                                    switch.is_on: button_sound
-                                                  then:
-                                                    - script.execute:
-                                                        id: play_sound
-                                                        priority: true
-                                                        sound_file: !lambda return id(center_button_press_sound);
-                                                    - delay: 300ms
-                                              - voice_assistant.start:
-      # Double Click
-      #  . Exposed as an event entity. To be used in automations inside Home Assistant
-      - timing:
-          - ON for at most 1s
-          - OFF for at most 0.25s
-          - ON for at most 1s
-          - OFF for at least 0.25s
-        then:
-          - if:
-              condition:
-                lambda: return !id(init_in_progress) && !id(color_changed);
-              then:
-                - if:
-                    condition:
-                      switch.is_on: button_sound
-                    then:
-                      - script.execute:
-                          id: play_sound
-                          priority: false
-                          sound_file: !lambda return id(center_button_double_press_sound);
-                - event.trigger:
-                    id: button_press_event
-                    event_type: "double_press"
-      # Triple Click
-      #  . Exposed as an event entity. To be used in automations inside Home Assistant
-      - timing:
-          - ON for at most 1s
-          - OFF for at most 0.25s
-          - ON for at most 1s
-          - OFF for at most 0.25s
-          - ON for at most 1s
-          - OFF for at least 0.25s
-        then:
-          - if:
-              condition:
-                lambda: return !id(init_in_progress) && !id(color_changed);
-              then:
-                - if:
-                    condition:
-                      switch.is_on: button_sound
-                    then:
-                      - script.execute:
-                          id: play_sound
-                          priority: false
-                          sound_file: !lambda return id(center_button_triple_press_sound);
-                - event.trigger:
-                    id: button_press_event
-                    event_type: "triple_press"
-      # Long Press
-      #  . Exposed as an event entity. To be used in automations inside Home Assistant
-      - timing:
-          - ON for at least 1s
-        then:
-          - if:
-              condition:
-                lambda: return !id(init_in_progress) && !id(color_changed);
-              then:
-                - if:
-                    condition:
-                      switch.is_on: button_sound
-                    then:
-                      - script.execute:
-                          id: play_sound
-                          priority: false
-                          sound_file: !lambda return id(center_button_long_press_sound);
-                - light.turn_off: voice_assistant_leds
-                - event.trigger:
-                    id: button_press_event
-                    event_type: "long_press"
-      # Factory Reset Warning
-      #  . Audible and Visible warning.
-      - timing:
-          - ON for at least 10s
-        then:
-          - if:
-              condition:
-                lambda: return !id(dial_touched);
-              then:
-                - light.turn_on:
-                    brightness: 100%
-                    id: voice_assistant_leds
-                    effect: "Factory Reset Coming Up"
-                - script.execute:
-                    id: play_sound
-                    priority: true
-                    sound_file: !lambda return id(factory_reset_initiated_sound);
-                - wait_until:
-                    binary_sensor.is_off: user_button
-                - if:
-                    condition:
-                      lambda: return !id(factory_reset_requested);
-                    then:
-                      - light.turn_off: voice_assistant_leds
-                      - script.execute:
-                          id: play_sound
-                          priority: true
-                          sound_file: !lambda return id(factory_reset_cancelled_sound);
-      # Factory Reset Confirmed.
-      #  . Audible warning to prompt user to release the button
-      #  . Set factory_reset_requested to true
-      - timing:
-          - ON for at least 22s
-        then:
-          - if:
-              condition:
-                lambda: return !id(dial_touched);
-              then:
-                - script.execute:
-                    id: play_sound
-                    priority: true
-                    sound_file: !lambda return id(factory_reset_confirmed_sound);
-                - light.turn_on:
-                    brightness: 100%
-                    red: 100%
-                    green: 0%
-                    blue: 0%
-                    id: voice_assistant_leds
-                    effect: "none"
-                - lambda: id(factory_reset_requested) = true;
-
-  - platform: gpio
-  # this thing is pretty flaky, giving several on/off commands at once. Do not use it for serious stuff
-    id: rotary_button
-    disabled_by_default: true
-    pin:
-      number: GPIO20
-      inverted: true
-      mode:
-        input: true
-        pullup: true
+# USR Button Removed here
 
 light:
   # Hardware LED ring. Not used because remapping needed
   - platform: esp32_rmt_led_strip
     id: leds_internal
-    pin: GPIO13
+    pin: GPIO3
     chipset: WS2812
     max_refresh_rate: 15ms
-    num_leds: 43
+    num_leds: 20
     rgb_order: GRB
     rmt_symbols: 96
     default_transition_length: 0ms
@@ -614,11 +405,7 @@ light:
     segments:
       - id: leds_internal
         from: 0
-        to: 31
-        reversed: True
-      - id: leds_internal
-        from: 32
-        to: 42
+        to: 20
         reversed: True
     effects:
       - addressable_lambda:
@@ -627,22 +414,22 @@ light:
           lambda: |-
             auto light_color = id(led_ring).current_values;
             Color color(light_color.get_red() * 255, light_color.get_green() * 255, light_color.get_blue() * 255);
-            int step = 255/43;
-            for (uint8_t i = 0; i < 43; i++) {
-              it[i] = color * (((43 - id(global_led_animation_index) + i) % 43) * step);
+            int step = 255/20;
+            for (uint8_t i = 0; i < 20; i++) {
+              it[i] = color * (((20 - id(global_led_animation_index) + i) % 20) * step);
             }
-            id(global_led_animation_index) = (id(global_led_animation_index) + 1) % 43;
+            id(global_led_animation_index) = (id(global_led_animation_index) + 1) % 20;
       - addressable_lambda:
           name: "Listening For Command"
           update_interval: 30ms
           lambda: |-
             auto light_color = id(led_ring).current_values;
             Color color(light_color.get_red() * 255, light_color.get_green() * 255, light_color.get_blue() * 255);
-            int step = 255/43;
-            for (uint8_t i = 0; i < 43; i++) {
-              it[i] = color * (((43 - id(global_led_animation_index) + i) % 43) * step);
+            int step = 255/20;
+            for (uint8_t i = 0; i < 20; i++) {
+              it[i] = color * (((20 - id(global_led_animation_index) + i) % 20) * step);
             }
-            id(global_led_animation_index) = (id(global_led_animation_index) + 1) % 43;
+            id(global_led_animation_index) = (id(global_led_animation_index) + 1) % 20;
       - addressable_lambda:
           name: "Thinking"
           update_interval: 30ms
@@ -656,7 +443,7 @@ light:
             }
             auto light_color = id(led_ring).current_values;
             Color color(light_color.get_red() * 255, light_color.get_green() * 255, light_color.get_blue() * 255);
-            for (uint8_t i = 0; i < 43; i++) {
+            for (uint8_t i = 0; i < 20; i++) {
                 it[i] = color * uint8_t(255/brightness_step_number*(brightness_step_number-brightness_step));
             }
             if (brightness_decreasing) {
@@ -671,18 +458,18 @@ light:
           name: "Replying"
           update_interval: 30ms
           lambda: |-
-            id(global_led_animation_index) = (43 + id(global_led_animation_index) - 1) % 43;
+            id(global_led_animation_index) = (20 + id(global_led_animation_index) - 1) % 20;
             auto light_color = id(led_ring).current_values;
             Color color(light_color.get_red() * 255, light_color.get_green() * 255, light_color.get_blue() * 255);
-            int step = 255/43;
-            for (uint8_t i = 0; i < 43; i++) {
-              it[i] = color * (255 - (((43 - id(global_led_animation_index) + i) % 43) * step));
+            int step = 255/20;
+            for (uint8_t i = 0; i < 20; i++) {
+              it[i] = color * (255 - (((20 - id(global_led_animation_index) + i) % 20) * step));
             }
       - addressable_lambda:
           name: "Respeaker startup failed"
           lambda: |-
             Color fail_color(255, 0, 0);
-            for (uint8_t i = 0; i < 43; i++) {
+            for (uint8_t i = 0; i < 20; i++) {
               if (i % 3) {
                 it[i] = Color::BLACK;
               } else {
@@ -697,7 +484,7 @@ light:
             Color silenced_color(255, 0, 0);
             auto volume_ratio = id(external_media_player).volume * 10.0f;
             auto is_muted = id(external_media_player).is_muted() || id(external_media_player).volume == 0.0f;
-            for (uint8_t i = 0; i < 43; i++) {
+            for (uint8_t i = 0; i < 20; i++) {
               if (i <= volume_ratio && !is_muted) {
                 it[i] = color * min( 255.0f * (volume_ratio - i) , 255.0f ) ;
               } else {
@@ -723,7 +510,7 @@ light:
             auto light_color = id(voice_assistant_leds).current_values;
             Color color(light_color.get_red() * 255, light_color.get_green() * 255,
                   light_color.get_blue() * 255);
-            for (uint8_t i = 0; i < 43; i++) {
+            for (uint8_t i = 0; i < 20; i++) {
               it[i] = color;
             }
       - addressable_twinkle:
@@ -731,7 +518,7 @@ light:
           twinkle_probability: 50%
       - addressable_rainbow:
           name: "Rainbow"
-          width: 43
+          width: 20
       - addressable_lambda:
           name: "Error"
           update_interval: 10ms
@@ -744,7 +531,7 @@ light:
               brightness_decreasing = true;
             }
             Color error_color(255, 0, 0);
-            for (uint8_t i = 0; i < 43; i++) {
+            for (uint8_t i = 0; i < 20; i++) {
               it[i] = error_color * uint8_t(255/brightness_step_number*(brightness_step_number-brightness_step));
             }
             if (brightness_decreasing) {
@@ -769,7 +556,7 @@ light:
             auto light_color = id(led_ring).current_values;
             Color color(light_color.get_red() * 255, light_color.get_green() * 255,
                   light_color.get_blue() * 255);
-            for (uint8_t i = 0; i < 43; i++) {
+            for (uint8_t i = 0; i < 20; i++) {
               it[i] = color * uint8_t(255/brightness_step_number*(brightness_step_number-brightness_step));
             }
             if (brightness_decreasing) {
@@ -787,9 +574,9 @@ light:
             auto light_color = id(led_ring).current_values;
             Color color(light_color.get_red() * 255, light_color.get_green() * 255,
                   light_color.get_blue() * 255);
-            auto timer_ratio = 43.0f * id(first_active_timer).seconds_left / max(id(first_active_timer).total_seconds , static_cast<uint32_t>(1));
+            auto timer_ratio = 20.0f * id(first_active_timer).seconds_left / max(id(first_active_timer).total_seconds , static_cast<uint32_t>(1));
             uint8_t last_led_on = static_cast<uint8_t>(ceil(timer_ratio)) - 1;
-            for (uint8_t i = 0; i < 43; i++) {
+            for (uint8_t i = 0; i < 20; i++) {
               float brightness_dip = ( i == id(global_led_animation_index) % 43 && i != last_led_on ) ? 0.96f : 1.0f ;
               if (i <= timer_ratio) {
                 it[i] = color * min(255.0f * brightness_dip * (timer_ratio - i) , 255.0f * brightness_dip) ;
@@ -797,7 +584,7 @@ light:
                 it[i] = Color::BLACK;
               }
             }
-            id(global_led_animation_index) = (43 + id(global_led_animation_index) - 1) % 43;
+            id(global_led_animation_index) = (20 + id(global_led_animation_index) - 1) % 20;
       - addressable_lambda:
           name: "Factory Reset Coming Up"
           update_interval: 1s
@@ -807,14 +594,14 @@ light:
             if (initial_run) {
               index = 0;
             }
-            for (uint8_t i = 0; i < 43; i++) {
+            for (uint8_t i = 0; i < 20; i++) {
               if (i <= index ) {
                 it[i] = color;
               } else {
                 it[i] = Color::BLACK;
               }
             }
-            index = (index + 1) % 43;
+            index = (index + 1) % 20;
   # User facing LED ring. Remapping of the internal LEDs.
   # Exposed to be used by the user.
   - platform: partition
@@ -833,16 +620,12 @@ light:
     segments:
       - id: leds_internal
         from: 0
-        to: 31
-        reversed: True
-      - id: leds_internal
-        from: 32
-        to: 42
+        to: 20
         reversed: True
     effects:
       - addressable_rainbow:
           name: "Rainbow"
-          width: 43
+          width: 20
 
   - platform: esp32_rmt_led_strip
     id: led_respeaker_onboard
@@ -882,39 +665,8 @@ light:
     entity_category: config
     default_transition_length: 0s
 
-sensor:
-  # The dial. Used to control volume and Hue of the LED ring.
-  - platform: rotary_encoder
-    id: dial
-    pin_a: GPIO47
-    pin_b: GPIO21
-    resolution: 1
-    on_clockwise:
-      - lambda: id(dial_touched) = true;
-      - if:
-          condition:
-            binary_sensor.is_off: user_button
-          then:
-            - script.execute:
-                id: control_volume
-                increase_volume: true
-          else:
-            - script.execute:
-                id: control_hue
-                increase_hue: true
-    on_anticlockwise:
-      - lambda: id(dial_touched) = true;
-      - if:
-          condition:
-            binary_sensor.is_off: user_button
-          then:
-            - script.execute:
-                id: control_volume
-                increase_volume: false
-          else:
-            - script.execute:
-                id: control_hue
-                increase_hue: false
+# Rotary Encoder Removed
+
   - platform: template
     id: next_timer
     name: "Next timer"
