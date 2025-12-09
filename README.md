@@ -1,10 +1,13 @@
-[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/formatbce)
 
-# Koala Satellite
-<div style="display: flex; justify-content: space-between;">
-  <img src="/casing/images/assembled.png" width="400">
-  <img src="/instructions/images/live_view_old.jpg" width="400">
-</div>
+# Voice Satellite
+
+
+Based on the Koala Satellite from FormatBCE. It's a mix between the Koala and the ReSpeaker Lite ESPHome.
+More or less the Basic ReSpeaker Lite, with an added 20pcs WS2812 LED-strip.
+Removed the USR button since v1 doesn't have it. Added the extra LED-strip to D2 (GPIO3).
+
+
+Original:
 
 ### Koala Satellite is a DIY device that works as a satellite for Home Assistant Assist.
 
