@@ -27,8 +27,7 @@ substitutions:
   center_button_long_press_sound_file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/center_button_long_press.flac
 
 dashboard_import:
-  # We gebruiken nu de directe HTTPS link, dat werkt altijd beter dan github://
-  package_import_url: "https://raw.githubusercontent.com/Pimmeke1989/Voice-Satellite/main/config/common/voice-base.yaml"
+  package_import_url: github://Pimmeke1989/Voice-Satellite/config/common/voice-base.yaml@main
   import_full_config: true
   
 esphome:
