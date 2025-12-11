@@ -33,7 +33,7 @@ dashboard_import:
 esphome:
   project: 
     name: pimmeke1989.LumiTone S1
-    version: 2025.12.4
+    version: 2025.12.5
   name: lumitone-s1
   friendly_name: LumiTone S1
   name_add_mac_suffix: true
@@ -632,6 +632,9 @@ light:
       - addressable_rainbow:
           name: "Rainbow"
           width: 20
+      - addressable_twinkle:
+          name: "Twinkle"
+          twinkle_probability: 50%
 
   - platform: esp32_rmt_led_strip
     id: led_respeaker_onboard
