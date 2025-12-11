@@ -158,10 +158,6 @@ ota:
   - platform: esphome
     id: ota_esphome
 
-update:
-  - platform: esphome
-    name: "Firmware"
-
 i2c:
   - id: internal_i2c
     sda: GPIO5
