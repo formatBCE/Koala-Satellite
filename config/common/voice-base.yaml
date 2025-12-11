@@ -391,7 +391,7 @@ light:
     pin: GPIO3
     chipset: WS2812
     max_refresh_rate: 15ms
-    num_leds: 20
+    num_leds: 144
     rgb_order: GRB
     rmt_symbols: 96
     default_transition_length: 0ms
@@ -405,7 +405,7 @@ light:
     segments:
       - id: leds_internal
         from: 0
-        to: 20
+        to: 19
         reversed: True
     effects:
       - addressable_lambda:
@@ -482,7 +482,7 @@ light:
           lambda: |-
             Color color(255, 0, 255);
             Color silenced_color(255, 0, 0);
-            auto volume_ratio = id(external_media_player).volume * 10.0f;
+            auto volume_ratio = id(external_media_player).volume * 20.0f;
             auto is_muted = id(external_media_player).is_muted() || id(external_media_player).volume == 0.0f;
             for (uint8_t i = 0; i < 20; i++) {
               if (i <= volume_ratio && !is_muted) {
@@ -492,7 +492,7 @@ light:
               }
             }
             if (is_muted) {
-              it[5] = silenced_color;
+              it[10] = silenced_color;
             }
       - addressable_lambda:
           name: "Center Button Touched"
@@ -611,6 +611,8 @@ light:
     icon: "mdi:circle-outline"
     default_transition_length: 0ms
     restore_mode: RESTORE_DEFAULT_OFF
+    on_state:
+      - script.execute: control_leds
     initial_state:
       color_mode: rgb
       brightness: 66%
@@ -620,7 +622,7 @@ light:
     segments:
       - id: leds_internal
         from: 0
-        to: 20
+        to: 19
         reversed: True
     effects:
       - addressable_rainbow:
@@ -666,7 +668,9 @@ light:
     default_transition_length: 0s
 
 # Rotary Encoder Removed
-
+sensor:
+                    
+                    
   - platform: template
     id: next_timer
     name: "Next timer"
@@ -691,18 +695,6 @@ text_sensor:
     id: current_time
     icon: mdi:clock
 
-event:
-  # Event entity exposed to the user to automate on complex center button presses.
-  # The simple press is not exposed as it is used to control the device itself.
-  - platform: template
-    id: button_press_event
-    name: "Button press"
-    icon: mdi:button-pointer
-    device_class: button
-    event_types:
-      - double_press
-      - triple_press
-      - long_press
 
 script:
   # Master script controlling the LEDs, based on different conditions : initialization in progress, wifi and api connected and voice assistant phase.
@@ -725,10 +717,10 @@ script:
             id(control_leds_init_state).execute();
           } else if (!id(wifi_id).is_connected() || !id(api_id).is_connected()){
             id(control_leds_no_ha_connection_state).execute();
-          } else if (id(user_button).state) {
-            id(control_leds_center_button_touched).execute();
-          } else if (id(dial_touched)) {
-            id(control_leds_volume_changed).execute();
+
+
+
+
           } else if (id(timer_ringing).state) {
             id(control_leds_timer_ringing).execute();
           } else if (id(voice_assistant_phase) == ${voice_assist_waiting_for_command_phase_id}) {
@@ -814,7 +806,12 @@ script:
           condition:
             light.is_on: led_ring
           then:
-            light.turn_on: led_ring
+            light.turn_on:
+                brightness: !lambda return max( id(led_ring).current_values.get_brightness() , 0.2f );
+                id: voice_assistant_leds
+                effect: "Rainbow"
+          else:
+            light.turn_off: voice_assistant_leds
 
   # Script executed when the voice assistant is waiting for a command (After the wake word)
   # Slow clockwise spin of the LED ring.
