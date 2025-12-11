@@ -32,10 +32,10 @@ substitutions:
 
 esphome:
   project: 
-    name: pimmeke1989.Voice Satellite
-    version: 2025.12.1
-  name: voice-satellite
-  friendly_name: Voice Satellite
+    name: pimmeke1989.LumiTone S1
+    version: 2025.12.2
+  name: lumitone-s1
+  friendly_name: LumiTone S1
   name_add_mac_suffix: true
   min_version: 2025.9.3
   on_boot:
