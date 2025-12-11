@@ -1,5 +1,5 @@
 
-# Voice Satellite
+# LumiTone S1
 
 
 Based on the Koala Satellite from FormatBCE. It's a mix between the Koala and the ReSpeaker Lite ESPHome.
