@@ -1,3 +1,7 @@
+dashboard_import:
+  package_import_url: github://Pimmeke1989/Voice-Satellite/config/common/voice-base.yaml@main
+  import_full_config: true
+
 substitutions:
   # Phases of the Voice Assistant
   # The voice assistant is ready to be triggered by a wake word
