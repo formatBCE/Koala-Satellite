@@ -522,12 +522,7 @@ light:
           twinkle_probability: 50%
       - addressable_rainbow:
           name: "Rainbow"
-          width: 20
-      - addressable_flicker:
-          name: "Candle"
-          update_interval: 16ms
-          intensity: 5%
-          
+          width: 20          
       - addressable_lambda:
           name: "Error"
           update_interval: 10ms
@@ -810,25 +805,17 @@ script:
   # Nothing (Either LED ring off or LED ring on if the user decided to turn the user facing LED ring on)
   - id: control_leds_voice_assistant_idle_phase
     then:
+      - light.turn_off: voice_assistant_leds
       - if:
           condition:
-            lambda: return id(idle_led_effect).state == "None";
+            light.is_on: led_ring
           then:
-            - light.turn_off: voice_assistant_leds
-          else:
-            - light.turn_on:
-                id: voice_assistant_leds
+            light.turn_on:
                 brightness: !lambda return max( id(led_ring).current_values.get_brightness() , 0.2f );
-                effect: !lambda return id(idle_led_effect).state;
-            
-            # Fix voor Static Color (die heeft effect 'None' nodig om stil te staan)
-            - if:
-                condition:
-                  lambda: return id(idle_led_effect).state == "Static Color";
-                then:
-                   - light.turn_on:
-                       id: voice_assistant_leds
-                       effect: "None"
+                id: voice_assistant_leds
+                effect: "Rainbow"
+          else:
+            light.turn_off: voice_assistant_leds
 
   # Script executed when the voice assistant is waiting for a command (After the wake word)
   # Slow clockwise spin of the LED ring.
@@ -1360,24 +1347,6 @@ micro_wake_word:
                                   - delay: 300ms
                             - voice_assistant.start:
                                 wake_word: !lambda return wake_word;
-
-select:
-  - platform: template
-    id: idle_led_effect
-    name: "Idle LED Effect"
-    icon: "mdi:palette"
-    optimistic: true
-    restore_value: true
-    initial_option: "None"
-    options:
-      - "None"
-      - "Static Color"
-      - "Rainbow"
-      - "Twinkle"
-      - "Candle"
-    entity_category: config
-    on_value:
-      - script.execute: control_leds
 
 
   - platform: template
