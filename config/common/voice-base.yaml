@@ -27,13 +27,14 @@ substitutions:
   center_button_long_press_sound_file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/center_button_long_press.flac
 
 dashboard_import:
-  package_import_url: github://Pimmeke1989/Voice-Satellite/config/common/voice-base.yaml@main
+  # We gebruiken nu de directe HTTPS link, dat werkt altijd beter dan github://
+  package_import_url: "https://raw.githubusercontent.com/Pimmeke1989/Voice-Satellite/main/config/common/voice-base.yaml"
   import_full_config: true
-
+  
 esphome:
   project: 
     name: pimmeke1989.LumiTone S1
-    version: 2025.12.5
+    version: 2025.12.6
   name: lumitone-s1
   friendly_name: LumiTone S1
   name_add_mac_suffix: true
