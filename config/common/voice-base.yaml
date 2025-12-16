@@ -395,7 +395,7 @@ light:
     pin: GPIO3
     chipset: WS2812
     max_refresh_rate: 15ms
-    num_leds: 144
+    num_leds: 20
     rgb_order: GRB
     rmt_symbols: 96
     default_transition_length: 0ms
