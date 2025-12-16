@@ -33,7 +33,7 @@ dashboard_import:
 esphome:
   project: 
     name: pimmeke1989.LumiTone S1
-    version: 2025.12.11
+    version: 2025.12.12
   name: lumitone-s1
   friendly_name: LumiTone S1
   name_add_mac_suffix: true
@@ -386,6 +386,17 @@ switch:
       then:
         - light.turn_off: led_respeaker_onboard
 
+  - platform: template
+    id: notification_switch
+    name: "Notification"
+    icon: "mdi:bell-alert"
+    optimistic: true
+    # Als de switch wordt omgezet, voer direct het LED controle script uit om de status te updaten
+    on_turn_on:
+      - script.execute: control_leds
+    on_turn_off:
+      - script.execute: control_leds
+
 # USR Button Removed here
 
 light:
@@ -498,31 +509,39 @@ light:
             if (is_muted) {
               it[10] = silenced_color;
             }
-      - addressable_lambda:
-          name: "Center Button Touched"
-          update_interval: 16ms
-          lambda: |-
-            if (initial_run) {
-              // set voice_assistant_leds light to colors based on led_ring
-              auto led_ring_cv = id(led_ring).current_values;
-              auto va_leds_call = id(voice_assistant_leds).make_call();
-              va_leds_call.from_light_color_values(led_ring_cv);
-              va_leds_call.set_brightness( min ( max( id(led_ring).current_values.get_brightness() , 0.2f ) + 0.1f , 1.0f ) );
-              va_leds_call.set_state(true);
-              va_leds_call.perform();
-            }
-            auto light_color = id(voice_assistant_leds).current_values;
-            Color color(light_color.get_red() * 255, light_color.get_green() * 255,
-                  light_color.get_blue() * 255);
-            for (uint8_t i = 0; i < 20; i++) {
-              it[i] = color;
-            }
+      
+      #TO BE REMOVED AFTER TESTING
+      # - addressable_lambda:
+      #     name: "Center Button Touched"
+      #     update_interval: 16ms
+      #     lambda: |-
+      #       if (initial_run) {
+      #         // set voice_assistant_leds light to colors based on led_ring
+      #         auto led_ring_cv = id(led_ring).current_values;
+      #         auto va_leds_call = id(voice_assistant_leds).make_call();
+      #         va_leds_call.from_light_color_values(led_ring_cv);
+      #         va_leds_call.set_brightness( min ( max( id(led_ring).current_values.get_brightness() , 0.2f ) + 0.1f , 1.0f ) );
+      #         va_leds_call.set_state(true);
+      #         va_leds_call.perform();
+      #       }
+      #       auto light_color = id(voice_assistant_leds).current_values;
+      #       Color color(light_color.get_red() * 255, light_color.get_green() * 255,
+      #             light_color.get_blue() * 255);
+      #       for (uint8_t i = 0; i < 20; i++) {
+      #         it[i] = color;
+      #       }
+
       - addressable_twinkle:
           name: "Twinkle"
           twinkle_probability: 50%
       - addressable_rainbow:
           name: "Rainbow"
-          width: 20          
+          width: 20        
+      - pulse:
+          name: "Notification Pulse"
+          update_interval: 500ms
+          min_brightness: 0%
+          max_brightness: 100%  
       - addressable_lambda:
           name: "Error"
           update_interval: 10ms
@@ -606,6 +625,21 @@ light:
               }
             }
             index = (index + 1) % 20;
+
+  #ADDED NEW SCRIPTS FOR LED-ANIMATIONS
+      - addressable_scan:
+          name: "Scan Slow"
+          move_interval: 50ms
+          scan_width: 5
+
+      # Snelle scanner (Voor Listening & Replying)
+      - addressable_scan:
+          name: "Scan Fast"
+          move_interval: 25ms
+          scan_width: 3
+
+
+
   # User facing LED ring. Remapping of the internal LEDs.
   # Exposed to be used by the user.
   - platform: partition
@@ -725,23 +759,24 @@ script:
           } else if (!id(wifi_id).is_connected() || !id(api_id).is_connected()){
             id(control_leds_no_ha_connection_state).execute();
 
-
-
-
           } else if (id(timer_ringing).state) {
             id(control_leds_timer_ringing).execute();
           } else if (id(voice_assistant_phase) == ${voice_assist_waiting_for_command_phase_id}) {
-            id(control_leds_voice_assistant_waiting_for_command_phase).execute();
+            id(control_leds_voice_assistant_waiting_for_command_phase_scan).execute();
           } else if (id(voice_assistant_phase) == ${voice_assist_listening_for_command_phase_id}) {
-            id(control_leds_voice_assistant_listening_for_command_phase).execute();
+            id(control_leds_voice_assistant_listening_for_command_phase_scan).execute();
           } else if (id(voice_assistant_phase) == ${voice_assist_thinking_phase_id}) {
             id(control_leds_voice_assistant_thinking_phase).execute();
           } else if (id(voice_assistant_phase) == ${voice_assist_replying_phase_id}) {
-            id(control_leds_voice_assistant_replying_phase).execute();
+            id(control_leds_voice_assistant_replying_phase_scan).execute();
           } else if (id(voice_assistant_phase) == ${voice_assist_error_phase_id}) {
             id(control_leds_voice_assistant_error_phase).execute();
           } else if (id(voice_assistant_phase) == ${voice_assist_not_ready_phase_id}) {
             id(control_leds_voice_assistant_not_ready_phase).execute();
+
+          } else if (id(notification_switch).state) {
+             id(control_leds_notification).execute();
+
           } else if (id(is_timer_active)) {
             id(control_leds_timer_ticking).execute();
           } else if (id(voice_assistant_phase) == ${voice_assist_idle_phase_id}) {
@@ -829,6 +864,21 @@ script:
           id: voice_assistant_leds
           effect: "Waiting for Command"
 
+  # NEW - Script for Waiting after Wake Word
+  # NEW - Uses Scan Slow
+  - id: control_leds_voice_assistant_waiting_for_command_phase_scan
+    then:
+      - light.turn_on:
+          id: voice_assistant_leds
+          # Deze regels zijn noodzakelijk om te synchroniseren met jouw instelling
+          brightness: !lambda return max( id(led_ring).current_values.get_brightness() , 0.5f );
+          red: !lambda return id(led_ring).current_values.get_red();
+          green: !lambda return id(led_ring).current_values.get_green();
+          blue: !lambda return id(led_ring).current_values.get_blue();
+          effect: "Scan Slow"
+
+
+
   # Script executed when the voice assistant is listening to a command
   # Fast clockwise spin of the LED ring.
   - id: control_leds_voice_assistant_listening_for_command_phase
@@ -837,6 +887,18 @@ script:
           brightness: !lambda return max( id(led_ring).current_values.get_brightness() , 0.2f );
           id: voice_assistant_leds
           effect: "Listening For Command"
+
+  # NEW - Script for Listening to command
+  # NEW - Uses Scan Fast
+  - id: control_leds_voice_assistant_listening_for_command_phase_scan
+    then:
+      - light.turn_on:
+          id: voice_assistant_leds
+          brightness: !lambda return max( id(led_ring).current_values.get_brightness() , 0.5f );
+          red: !lambda return id(led_ring).current_values.get_red();
+          green: !lambda return id(led_ring).current_values.get_green();
+          blue: !lambda return id(led_ring).current_values.get_blue();
+          effect: "Scan Fast"
 
   # Script executed when the voice assistant is thinking to a command
   # The spin stops and the 2 LEDs that are currently on and blinking indicating the commend is being processed.
@@ -855,6 +917,18 @@ script:
           brightness: !lambda return max( id(led_ring).current_values.get_brightness() , 0.2f );
           id: voice_assistant_leds
           effect: "Replying"
+
+  # NEW - Script for Replying to command
+  # NEW - Uses Scan Fast
+  - id: control_leds_voice_assistant_replying_phase_scan
+    then:
+      - light.turn_on:
+          id: voice_assistant_leds
+          brightness: !lambda return max( id(led_ring).current_values.get_brightness() , 0.5f );
+          red: 100%
+          green: 77%
+          blue: 56%
+          effect: "Scan Fast"
 
   # Script executed when the voice assistant is in error
   # Fast Red Pulse
@@ -917,6 +991,19 @@ script:
           brightness: !lambda return max( id(led_ring).current_values.get_brightness() , 0.2f );
           id: voice_assistant_leds
           effect: "Timer tick"
+
+  # Script executed when the notification switch has been turned on.
+  # Lights will pulse red
+  - id: control_leds_notification
+    then:
+      - light.turn_on:
+          id: voice_assistant_leds
+          brightness: !lambda return max( id(led_ring).current_values.get_brightness() , 0.2f );
+          red: 100%
+          green: 0%
+          blue: 0%
+          effect: "Notification Pulse"
+
 
 
   # Script executed when the timer is ringing, to playback sounds.

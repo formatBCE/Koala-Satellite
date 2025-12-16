@@ -1,0 +1,21 @@
+packages:
+  remote_package:
+    url: https://github.com/Pimmeke1989/Voice-Satellite
+    ref: main
+    files:
+      - config/common/voice-base.yaml
+    refresh: 0s
+
+esphome:
+  friendly_name: LumiTone S1
+  name_add_mac_suffix: false
+
+wifi:
+  ap:
+    ssid: "LumiTone S1"
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+api:
+  encryption:
+    key: !secret api_key
