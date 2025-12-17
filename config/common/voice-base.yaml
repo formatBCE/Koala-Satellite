@@ -21,10 +21,10 @@ substitutions:
   mute_switch_off_sound_file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/mute_switch_off.flac
   timer_finished_sound_file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/timer_finished.flac
   wake_word_triggered_sound_file: http://10.10.10.15:8123/local/wakeword/wake_word_triggered.wav
-  center_button_press_sound_file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/center_button_press.flac
-  center_button_double_press_sound_file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/center_button_double_press.flac
-  center_button_triple_press_sound_file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/center_button_triple_press.flac
-  center_button_long_press_sound_file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/center_button_long_press.flac
+  # center_button_press_sound_file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/center_button_press.flac
+  # center_button_double_press_sound_file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/center_button_double_press.flac
+  # center_button_triple_press_sound_file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/center_button_triple_press.flac
+  # center_button_long_press_sound_file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/center_button_long_press.flac
 
 dashboard_import:
   package_import_url: github://Pimmeke1989/Voice-Satellite/config/common/voice-base.yaml@main
@@ -33,7 +33,7 @@ dashboard_import:
 esphome:
   project: 
     name: pimmeke1989.LumiTone S1
-    version: 2025.12.12
+    version: 2025.12.13
   name: lumitone-s1
   friendly_name: LumiTone S1
   name_add_mac_suffix: true
@@ -423,28 +423,28 @@ light:
         to: 19
         reversed: True
     effects:
-      - addressable_lambda:
-          name: "Waiting for Command"
-          update_interval: 60ms
-          lambda: |-
-            auto light_color = id(led_ring).current_values;
-            Color color(light_color.get_red() * 255, light_color.get_green() * 255, light_color.get_blue() * 255);
-            int step = 255/20;
-            for (uint8_t i = 0; i < 20; i++) {
-              it[i] = color * (((20 - id(global_led_animation_index) + i) % 20) * step);
-            }
-            id(global_led_animation_index) = (id(global_led_animation_index) + 1) % 20;
-      - addressable_lambda:
-          name: "Listening For Command"
-          update_interval: 30ms
-          lambda: |-
-            auto light_color = id(led_ring).current_values;
-            Color color(light_color.get_red() * 255, light_color.get_green() * 255, light_color.get_blue() * 255);
-            int step = 255/20;
-            for (uint8_t i = 0; i < 20; i++) {
-              it[i] = color * (((20 - id(global_led_animation_index) + i) % 20) * step);
-            }
-            id(global_led_animation_index) = (id(global_led_animation_index) + 1) % 20;
+      # - addressable_lambda:
+      #     name: "Waiting for Command"
+      #     update_interval: 60ms
+      #     lambda: |-
+      #       auto light_color = id(led_ring).current_values;
+      #       Color color(light_color.get_red() * 255, light_color.get_green() * 255, light_color.get_blue() * 255);
+      #       int step = 255/20;
+      #       for (uint8_t i = 0; i < 20; i++) {
+      #         it[i] = color * (((20 - id(global_led_animation_index) + i) % 20) * step);
+      #       }
+      #       id(global_led_animation_index) = (id(global_led_animation_index) + 1) % 20;
+      # - addressable_lambda:
+      #     name: "Listening For Command"
+      #     update_interval: 30ms
+      #     lambda: |-
+      #       auto light_color = id(led_ring).current_values;
+      #       Color color(light_color.get_red() * 255, light_color.get_green() * 255, light_color.get_blue() * 255);
+      #       int step = 255/20;
+      #       for (uint8_t i = 0; i < 20; i++) {
+      #         it[i] = color * (((20 - id(global_led_animation_index) + i) % 20) * step);
+      #       }
+      #       id(global_led_animation_index) = (id(global_led_animation_index) + 1) % 20;
       - addressable_lambda:
           name: "Thinking"
           update_interval: 30ms
@@ -469,17 +469,17 @@ light:
             if (brightness_step == 0 || brightness_step == brightness_step_number) {
               brightness_decreasing = !brightness_decreasing;
             }
-      - addressable_lambda:
-          name: "Replying"
-          update_interval: 30ms
-          lambda: |-
-            id(global_led_animation_index) = (20 + id(global_led_animation_index) - 1) % 20;
-            auto light_color = id(led_ring).current_values;
-            Color color(light_color.get_red() * 255, light_color.get_green() * 255, light_color.get_blue() * 255);
-            int step = 255/20;
-            for (uint8_t i = 0; i < 20; i++) {
-              it[i] = color * (255 - (((20 - id(global_led_animation_index) + i) % 20) * step));
-            }
+      # - addressable_lambda:
+      #     name: "Replying"
+      #     update_interval: 30ms
+      #     lambda: |-
+      #       id(global_led_animation_index) = (20 + id(global_led_animation_index) - 1) % 20;
+      #       auto light_color = id(led_ring).current_values;
+      #       Color color(light_color.get_red() * 255, light_color.get_green() * 255, light_color.get_blue() * 255);
+      #       int step = 255/20;
+      #       for (uint8_t i = 0; i < 20; i++) {
+      #         it[i] = color * (255 - (((20 - id(global_led_animation_index) + i) % 20) * step));
+      #       }
       - addressable_lambda:
           name: "Respeaker startup failed"
           lambda: |-
@@ -510,26 +510,6 @@ light:
               it[10] = silenced_color;
             }
       
-      #TO BE REMOVED AFTER TESTING
-      # - addressable_lambda:
-      #     name: "Center Button Touched"
-      #     update_interval: 16ms
-      #     lambda: |-
-      #       if (initial_run) {
-      #         // set voice_assistant_leds light to colors based on led_ring
-      #         auto led_ring_cv = id(led_ring).current_values;
-      #         auto va_leds_call = id(voice_assistant_leds).make_call();
-      #         va_leds_call.from_light_color_values(led_ring_cv);
-      #         va_leds_call.set_brightness( min ( max( id(led_ring).current_values.get_brightness() , 0.2f ) + 0.1f , 1.0f ) );
-      #         va_leds_call.set_state(true);
-      #         va_leds_call.perform();
-      #       }
-      #       auto light_color = id(voice_assistant_leds).current_values;
-      #       Color color(light_color.get_red() * 255, light_color.get_green() * 255,
-      #             light_color.get_blue() * 255);
-      #       for (uint8_t i = 0; i < 20; i++) {
-      #         it[i] = color;
-      #       }
 
       - addressable_twinkle:
           name: "Twinkle"
@@ -840,7 +820,7 @@ script:
           effect: "Twinkle"
 
   # Script executed when the voice assistant is idle (waiting for a wake word)
-  # Nothing (Either LED ring off or LED ring on if the user decided to turn the user facing LED ring on)
+  # Show Rainbow when LED-ring switch is on.
   - id: control_leds_voice_assistant_idle_phase
     then:
       - light.turn_off: voice_assistant_leds
@@ -857,12 +837,12 @@ script:
 
   # Script executed when the voice assistant is waiting for a command (After the wake word)
   # Slow clockwise spin of the LED ring.
-  - id: control_leds_voice_assistant_waiting_for_command_phase
-    then:
-      - light.turn_on:
-          brightness: !lambda return max( id(led_ring).current_values.get_brightness() , 0.2f );
-          id: voice_assistant_leds
-          effect: "Waiting for Command"
+  # - id: control_leds_voice_assistant_waiting_for_command_phase
+  #   then:
+  #     - light.turn_on:
+  #         brightness: !lambda return max( id(led_ring).current_values.get_brightness() , 0.2f );
+  #         id: voice_assistant_leds
+  #         effect: "Waiting for Command"
 
   # NEW - Script for Waiting after Wake Word
   # NEW - Uses Scan Slow
@@ -881,12 +861,12 @@ script:
 
   # Script executed when the voice assistant is listening to a command
   # Fast clockwise spin of the LED ring.
-  - id: control_leds_voice_assistant_listening_for_command_phase
-    then:
-      - light.turn_on:
-          brightness: !lambda return max( id(led_ring).current_values.get_brightness() , 0.2f );
-          id: voice_assistant_leds
-          effect: "Listening For Command"
+  # - id: control_leds_voice_assistant_listening_for_command_phase
+  #   then:
+  #     - light.turn_on:
+  #         brightness: !lambda return max( id(led_ring).current_values.get_brightness() , 0.2f );
+  #         id: voice_assistant_leds
+  #         effect: "Listening For Command"
 
   # NEW - Script for Listening to command
   # NEW - Uses Scan Fast
@@ -911,12 +891,12 @@ script:
 
   # Script executed when the voice assistant is replying to a command
   # Fast anticlockwise spin of the LED ring.
-  - id: control_leds_voice_assistant_replying_phase
-    then:
-      - light.turn_on:
-          brightness: !lambda return max( id(led_ring).current_values.get_brightness() , 0.2f );
-          id: voice_assistant_leds
-          effect: "Replying"
+  # - id: control_leds_voice_assistant_replying_phase
+  #   then:
+  #     - light.turn_on:
+  #         brightness: !lambda return max( id(led_ring).current_values.get_brightness() , 0.2f );
+  #         id: voice_assistant_leds
+  #         effect: "Replying"
 
   # NEW - Script for Replying to command
   # NEW - Uses Scan Fast
@@ -967,12 +947,12 @@ script:
 
   # Script executed when the center button is touched
   # The complete LED ring turns on
-  - id: control_leds_center_button_touched
-    then:
-      - light.turn_on:
-          brightness: !lambda return min ( max( id(led_ring).current_values.get_brightness() , 0.2f ) + 0.1f , 1.0f );
-          id: voice_assistant_leds
-          effect: "Center Button Touched"
+  # - id: control_leds_center_button_touched
+  #   then:
+  #     - light.turn_on:
+  #         brightness: !lambda return min ( max( id(led_ring).current_values.get_brightness() , 0.2f ) + 0.1f , 1.0f );
+  #         id: voice_assistant_leds
+  #         effect: "Center Button Touched"
 
   # Script executed when the timer is ringing, to control the LEDs
   # The LED ring blinks.
@@ -1283,14 +1263,14 @@ media_player:
               decibel_reduction: 0
               duration: 1.0s
     files:
-      - id: center_button_press_sound
-        file: ${center_button_press_sound_file}
-      - id: center_button_double_press_sound
-        file: ${center_button_double_press_sound_file}
-      - id: center_button_triple_press_sound
-        file: ${center_button_triple_press_sound_file}
-      - id: center_button_long_press_sound
-        file: ${center_button_long_press_sound_file}
+      # - id: center_button_press_sound
+      #   file: ${center_button_press_sound_file}
+      # - id: center_button_double_press_sound
+      #   file: ${center_button_double_press_sound_file}
+      # - id: center_button_triple_press_sound
+      #   file: ${center_button_triple_press_sound_file}
+      # - id: center_button_long_press_sound
+      #   file: ${center_button_long_press_sound_file}
       - id: factory_reset_initiated_sound
         file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/factory_reset_initiated.mp3
       - id: factory_reset_cancelled_sound
