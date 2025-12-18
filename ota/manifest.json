@@ -1,16 +1,16 @@
 {
   "name": "Koala Satellite",
-  "version": "2025.10.0",
+  "version": "2025.12.0",
   "home_assistant_domain": "esphome",
   "new_install_prompt_erase": false,
   "builds": [
     {
       "chipFamily": "ESP32-S3",
       "ota": {
-        "md5": "3f001b5693de008788dbf4d79f4f04df",
+        "md5": "cccab85205376d672872d85c718b51bc",
         "path": "koala-ota.bin",
-        "release_url": "https://github.com/formatBCE/Koala-Satellite/releases/tag/2025.10.0",
-        "summary": "ESPHome 2025.9.3. Fix to mic mute switch behaviour."
+        "release_url": "https://github.com/formatBCE/Koala-Satellite/releases/tag/2025.12.0",
+        "summary": "Sendspin protocol support. ESPHome 2025.12.0."
       }
     }
   ]
