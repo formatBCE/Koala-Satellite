@@ -206,6 +206,11 @@ globals:
     type: bool
     restore_value: no
     initial_value: 'false'
+  # Global variable tracking if the group media player volume was recent changed.
+  - id: group_volume_changed
+    type: bool
+    restore_value: no
+    initial_value: 'false'
   - id: saved_alarm_time
     type: std::string
     restore_value: yes
