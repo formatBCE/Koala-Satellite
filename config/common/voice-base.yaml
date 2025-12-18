@@ -37,7 +37,7 @@ dashboard_import:
 esphome:
   project: 
     name: pimmeke1989.LumiTone S1
-    version: 2025.12.15
+    version: 2025.12.20
   name: lumitone-s1
   friendly_name: LumiTone S1
   name_add_mac_suffix: true
