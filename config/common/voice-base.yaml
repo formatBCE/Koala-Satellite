@@ -156,7 +156,6 @@ api:
 
 http_request:
 # Uncomment this, if you have problems with text-to-speech because of Home Assistant HTTPS internal URL
-http_request:
 #   verify_ssl: false
 
 ota:
