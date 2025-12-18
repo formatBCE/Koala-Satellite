@@ -1023,9 +1023,6 @@ script:
   # Script execute when the timer is done ringing, to disable repeat mode.
   - id: disable_repeat
     then:
-      - media_player.repeat_off:
-          id: external_media_player
-          announcement: true
       # Turn off the repeat mode and pause for 0 ms between playlist items/repeats
       - media_player.repeat_off:
           id: external_media_player
@@ -1054,7 +1051,6 @@ script:
               .set_announcement(true)
               .perform();
           }
-          
 
   # Script used to fetch the first active timer (Stored in global first_active_timer)
   - id: fetch_first_active_timer
@@ -1318,7 +1314,6 @@ media_player:
               id: media_mixing_input
               decibel_reduction: 0
               duration: 1.0s
-    
 
 respeaker_lite:
   id: respeaker
