@@ -154,6 +154,7 @@ api:
     - script.execute: control_leds
   encryption:
 
+http_request:
 # Uncomment this, if you have problems with text-to-speech because of Home Assistant HTTPS internal URL
 http_request:
 #   verify_ssl: false
@@ -197,6 +198,11 @@ globals:
 
   # Global variable tracking if the LED color was recently changed.
   - id: color_changed
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  # Global variable tracking if the group media player volume was recent changed.
+  - id: group_volume_changed
     type: bool
     restore_value: no
     initial_value: 'false'
@@ -1026,6 +1032,9 @@ script:
           id: external_media_player
           announcement: true
       # Turn off the repeat mode and pause for 0 ms between playlist items/repeats
+      - media_player.repeat_off:
+          id: external_media_player
+          announcement: true
       - lambda: |-
             id(external_media_player)->set_playlist_delay_ms(1, 0);
 
@@ -1223,7 +1232,7 @@ speaker:
       - id: media_mixing_input
         timeout: never
 
-  # Vritual speakers to resample each pipelines' audio, if necessary, as the mixer speaker requires the same sample rate
+  # Virtual speakers to resample each pipelines' audio, if necessary, as the mixer speaker requires the same sample rate
   - platform: resampler
     id: announcement_resampling_speaker
     output_speaker: announcement_mixing_input
@@ -1265,7 +1274,6 @@ media_source:
         file: ${wake_word_triggered_sound_file}
       - id: error_cloud_expired
         file: ${error_cloud_expired_sound_file}
-
 
 media_player:
   - platform: sendspin
@@ -1590,7 +1598,7 @@ voice_assistant:
     - mixer_speaker.apply_ducking:
         id: media_mixing_input
         decibel_reduction: 20  # Number of dB quieter; higher implies more quiet, 0 implies full volume
-        duration: 0.0s         # The duration of the transition (default is no transition)
+        duration: 0.0s  # The duration of the transition (default is no transition)
   on_listening:
     - lambda: id(voice_assistant_phase) = ${voice_assist_waiting_for_command_phase_id};
     - script.execute: control_leds
