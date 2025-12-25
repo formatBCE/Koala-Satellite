@@ -630,32 +630,26 @@ light:
   #         twinkle_probability: 50%
 
   # OUDE 'partition' led_ring WEGHALEN en vervangen door deze 'template':
-  - platform: template
+  - platform: rgb
     id: led_ring
     name: "LED Ring"
-    entity_category: config
+    red: output_red
+    green: output_green
+    blue: output_blue
     icon: "mdi:circle-outline"
+    entity_category: config
     restore_mode: RESTORE_DEFAULT_OFF
-    optimistic: true
     
-    # Als je hem aanzet in HA: Forceer 'Rainbow' en update de status
-    turn_on_action:
-      - lambda: |-
-          // CORRECTIE: Gebruik current_values om het effect te zetten
-          id(led_ring).current_values.set_effect("Rainbow");
-          id(led_ring).publish_state();
+    # Als de lamp aangaat:
+    on_turn_on:
+      - script.execute: control_leds
+    
+    # Als de lamp uitgaat:
+    on_turn_off:
       - script.execute: control_leds
 
-    # Bij uitzetten of wijzigen: Voer het script uit
-    turn_off_action:
-      - script.execute: control_leds
-    set_level_action:
-      - script.execute: control_leds
-    set_rgb_action:
-      - script.execute: control_leds
-    set_effect_action:
-      - script.execute: control_leds
-
+    # Hier definiëren we de effecten zodat HA ze ziet.
+    # We doen er niets mee in deze lamp (return), maar het script leest de naam uit.
     effects:
       - lambda:
           name: "Rainbow"
@@ -703,6 +697,24 @@ light:
     chipset: ws2812
     entity_category: config
     default_transition_length: 0s
+
+
+output:
+  - platform: template
+    id: output_red
+    type: float
+    write_action: 
+      - script.execute: control_leds
+  - platform: template
+    id: output_green
+    type: float
+    write_action:
+      - script.execute: control_leds
+  - platform: template
+    id: output_blue
+    type: float
+    write_action:
+      - script.execute: control_leds
 
 # Rotary Encoder Removed
 sensor:                   
