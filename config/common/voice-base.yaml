@@ -806,12 +806,14 @@ script:
           condition:
             light.is_on: led_ring
           then:
-            light.turn_on:
-                brightness: !lambda return max( id(led_ring).current_values.get_brightness() , 0.2f );
-                id: voice_assistant_leds
-                effect: "Rainbow"
-          else:
-            light.turn_off: voice_assistant_leds
+            light.turn_on: led_ring
+              
+          #   light.turn_on:
+          #       brightness: !lambda return max( id(led_ring).current_values.get_brightness() , 0.2f );
+          #       id: voice_assistant_leds
+          #       effect: "Rainbow"
+          # else:
+          #   light.turn_off: voice_assistant_leds
 
   # NEW - Script for Waiting after Wake Word
   # NEW - Uses Scan Slow
