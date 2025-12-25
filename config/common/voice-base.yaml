@@ -34,7 +34,7 @@ dashboard_import:
 esphome:
   project: 
     name: pimmeke1989.LumiTone S1
-    version: 2026.01.02_RC1
+    version: 2026.01.02_RC2
   name: lumitone-s1
   friendly_name: LumiTone S1
   name_add_mac_suffix: true
@@ -489,6 +489,10 @@ light:
               it[10] = silenced_color;
             }
       
+      - pulse:
+          name: "Slow Pulse"
+          transition_length: 1000ms
+          update_interval: 1000ms
 
       - addressable_twinkle:
           name: "Twinkle"
@@ -632,6 +636,10 @@ light:
           lambda: return;
       - lambda:
           name: "Twinkle"
+          update_interval: 0s
+          lambda: return;
+      - lambda:
+          name: "Slow Pulse"
           update_interval: 0s
           lambda: return;
 
@@ -1460,6 +1468,7 @@ select:
     options:
       - "Rainbow"
       - "Twinkle"
+      - "Slow Pulse"
       - "None"
     on_value:
       # Als je in HA een ander effect kiest terwijl de lamp al AAN staat,
