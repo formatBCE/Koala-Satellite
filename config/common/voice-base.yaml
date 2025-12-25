@@ -599,37 +599,9 @@ light:
 
 
 
-  # User facing LED ring. Remapping of the internal LEDs.  REMOVED FOR TEMPLATE BELOW
+  # User facing LED ring. Remapping of the internal LEDs. 
   # Exposed to be used by the user.
-  # - platform: partition
-  #   id: led_ring
-  #   name: LED Ring
-  #   entity_category: config
-  #   icon: "mdi:circle-outline"
-  #   default_transition_length: 0ms
-  #   restore_mode: RESTORE_DEFAULT_OFF
-  #   # on_state:
-  #   #   - script.execute: control_leds
-  #   initial_state:
-  #     color_mode: rgb
-  #     brightness: 66%
-  #     red: 9.4%
-  #     green: 73.3%
-  #     blue: 94.9%
-  #   segments:
-  #     - id: leds_internal
-  #       from: 0
-  #       to: 19
-  #       reversed: True
-  #   effects:
-  #     - addressable_rainbow:
-  #         name: "Rainbow"
-  #         width: 20
-  #     - addressable_twinkle:
-  #         name: "Twinkle"
-  #         twinkle_probability: 50%
 
-  # OUDE 'partition' led_ring WEGHALEN en vervangen door deze 'template':
   - platform: rgb
     id: led_ring
     name: "LED Ring"
@@ -642,6 +614,9 @@ light:
     
     # Als de lamp aangaat:
     on_turn_on:
+      - light.turn_on:
+          id: led_ring
+          effect: !lambda return id(default_idle_effect).state;
       - script.execute: control_leds
     
     # Als de lamp uitgaat:
@@ -875,22 +850,6 @@ script:
           else:
             # De ring moet UIT staan:
             - light.turn_off: voice_assistant_leds
-
-  # - id: control_leds_voice_assistant_idle_phase
-  #   then:
-  #     - light.turn_off: voice_assistant_leds
-  #     - if:
-  #         condition:
-  #           light.is_on: led_ring
-  #         then:
-  #           light.turn_on: led_ring
-              
-          #   light.turn_on:
-          #       brightness: !lambda return max( id(led_ring).current_values.get_brightness() , 0.2f );
-          #       id: voice_assistant_leds
-          #       effect: "Rainbow"
-          # else:
-          #   light.turn_off: voice_assistant_leds
 
   # NEW - Script for Waiting after Wake Word
   # NEW - Uses Scan Slow
@@ -1489,6 +1448,32 @@ micro_wake_word:
                                 wake_word: !lambda return wake_word;
 
 select:
+  # Select the default IDLE effect. Changes when selected.
+  - platform: template
+    id: default_idle_effect
+    name: "Standard IDLE Effect"
+    icon: "mdi:palette"
+    entity_category: config
+    optimistic: true
+    restore_value: true
+    initial_option: "Rainbow"
+    options:
+      - "Rainbow"
+      - "Twinkle"
+      - "None"
+    on_value:
+      # Als je in HA een ander effect kiest terwijl de lamp al AAN staat,
+      # pas het dan direct toe.
+      - if:
+          condition:
+            light.is_on: led_ring
+          then:
+            - light.turn_on:
+                id: led_ring
+                effect: !lambda return x;
+            - script.execute: control_leds
+
+
   - platform: template
     name: "Wake word sensitivity"
     optimistic: true
