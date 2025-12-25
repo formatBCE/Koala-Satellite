@@ -608,8 +608,8 @@ light:
     icon: "mdi:circle-outline"
     default_transition_length: 0ms
     restore_mode: RESTORE_DEFAULT_OFF
-    on_state:
-      - script.execute: control_leds
+    # on_state:
+    #   - script.execute: control_leds
     initial_state:
       color_mode: rgb
       brightness: 66%
