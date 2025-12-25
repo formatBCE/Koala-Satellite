@@ -34,7 +34,7 @@ dashboard_import:
 esphome:
   project: 
     name: pimmeke1989.LumiTone S1
-    version: 2026.01.02_RC2
+    version: 2026.01.02_RC3
   name: lumitone-s1
   friendly_name: LumiTone S1
   name_add_mac_suffix: true
@@ -601,6 +601,29 @@ light:
           move_interval: 25ms
           scan_width: 3
 
+      - addressable_lambda:
+          name: "Christmas"
+          update_interval: 250ms
+          lambda: |-
+            static int offset = 0;
+            // Kleuren definiëren (Rood en iets gedimd Wit voor balans)
+            Color red = Color(255, 0, 0);
+            Color white = Color(200, 200, 200);
+
+            for (int i = 0; i < it.size(); i++) {
+              // Patroon: 2 rood, 2 wit, herhalend
+              int pos = (i + offset) % 4;
+              
+              if (pos < 2) {
+                it[i] = red;
+              } else {
+                it[i] = white;
+              }
+            }
+            // Verschuif het patroon voor de volgende frame
+            offset++; 
+            if (offset >= 4) offset = 0;
+
 
 
   # User facing LED ring. Remapping of the internal LEDs. 
@@ -640,6 +663,10 @@ light:
           lambda: return;
       - lambda:
           name: "Slow Pulse"
+          update_interval: 0s
+          lambda: return;
+      - lambda:
+          name: "Christmas"
           update_interval: 0s
           lambda: return;
 
@@ -1467,6 +1494,7 @@ select:
     initial_option: "Rainbow"
     options:
       - "Rainbow"
+      - "Christmas"
       - "Twinkle"
       - "Slow Pulse"
       - "None"
