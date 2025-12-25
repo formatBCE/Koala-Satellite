@@ -599,35 +599,72 @@ light:
 
 
 
-  # User facing LED ring. Remapping of the internal LEDs.
+  # User facing LED ring. Remapping of the internal LEDs.  REMOVED FOR TEMPLATE BELOW
   # Exposed to be used by the user.
-  - platform: partition
+  # - platform: partition
+  #   id: led_ring
+  #   name: LED Ring
+  #   entity_category: config
+  #   icon: "mdi:circle-outline"
+  #   default_transition_length: 0ms
+  #   restore_mode: RESTORE_DEFAULT_OFF
+  #   # on_state:
+  #   #   - script.execute: control_leds
+  #   initial_state:
+  #     color_mode: rgb
+  #     brightness: 66%
+  #     red: 9.4%
+  #     green: 73.3%
+  #     blue: 94.9%
+  #   segments:
+  #     - id: leds_internal
+  #       from: 0
+  #       to: 19
+  #       reversed: True
+  #   effects:
+  #     - addressable_rainbow:
+  #         name: "Rainbow"
+  #         width: 20
+  #     - addressable_twinkle:
+  #         name: "Twinkle"
+  #         twinkle_probability: 50%
+
+  # OUDE 'partition' led_ring WEGHALEN en vervangen door deze 'template':
+  - platform: template
     id: led_ring
-    name: LED Ring
+    name: "LED Ring"
     entity_category: config
     icon: "mdi:circle-outline"
-    default_transition_length: 0ms
     restore_mode: RESTORE_DEFAULT_OFF
-    # on_state:
-    #   - script.execute: control_leds
-    initial_state:
-      color_mode: rgb
-      brightness: 66%
-      red: 9.4%
-      green: 73.3%
-      blue: 94.9%
-    segments:
-      - id: leds_internal
-        from: 0
-        to: 19
-        reversed: True
+    optimistic: true
+    
+    # Als je hem aanzet in HA: Forceer 'Rainbow' en update de status
+    turn_on_action:
+      - lambda: |-
+          // CORRECTIE: Gebruik current_values om het effect te zetten
+          id(led_ring).current_values.set_effect("Rainbow");
+          id(led_ring).publish_state();
+      - script.execute: control_leds
+
+    # Bij uitzetten of wijzigen: Voer het script uit
+    turn_off_action:
+      - script.execute: control_leds
+    set_level_action:
+      - script.execute: control_leds
+    set_rgb_action:
+      - script.execute: control_leds
+    set_effect_action:
+      - script.execute: control_leds
+
     effects:
-      - addressable_rainbow:
+      - lambda:
           name: "Rainbow"
-          width: 20
-      - addressable_twinkle:
+          update_interval: 0s
+          lambda: return;
+      - lambda:
           name: "Twinkle"
-          twinkle_probability: 50%
+          update_interval: 0s
+          lambda: return;
 
   - platform: esp32_rmt_led_strip
     id: led_respeaker_onboard
@@ -799,14 +836,42 @@ script:
 
   # Script executed when the voice assistant is idle (waiting for a wake word)
   # Show Rainbow when LED-ring switch is on.
+
   - id: control_leds_voice_assistant_idle_phase
     then:
-      - light.turn_off: voice_assistant_leds
       - if:
           condition:
             light.is_on: led_ring
           then:
-            light.turn_on: led_ring
+            # De ring moet AAN staan: Kopieer instellingen direct over
+            - if:
+                condition:
+                  lambda: 'return id(led_ring).get_effect_name() != "None";'
+                then:
+                  - light.turn_on:
+                      id: voice_assistant_leds
+                      brightness: !lambda return id(led_ring).current_values.get_brightness();
+                      effect: !lambda return id(led_ring).get_effect_name();
+                else:
+                  - light.turn_on:
+                      id: voice_assistant_leds
+                      brightness: !lambda return id(led_ring).current_values.get_brightness();
+                      red: !lambda return id(led_ring).current_values.get_red();
+                      green: !lambda return id(led_ring).current_values.get_green();
+                      blue: !lambda return id(led_ring).current_values.get_blue();
+                      effect: "None"
+          else:
+            # De ring moet UIT staan:
+            - light.turn_off: voice_assistant_leds
+
+  # - id: control_leds_voice_assistant_idle_phase
+  #   then:
+  #     - light.turn_off: voice_assistant_leds
+  #     - if:
+  #         condition:
+  #           light.is_on: led_ring
+  #         then:
+  #           light.turn_on: led_ring
               
           #   light.turn_on:
           #       brightness: !lambda return max( id(led_ring).current_values.get_brightness() , 0.2f );
