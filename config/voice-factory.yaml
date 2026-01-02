@@ -26,6 +26,8 @@ dashboard_import:
   import_full_config: true
 
 wifi:
+  ap:
+    ssid: "LumiTone S1"
   on_connect:
     - delay: 5s  # Gives time for improv results to be transmitted
     - script.execute: control_leds
