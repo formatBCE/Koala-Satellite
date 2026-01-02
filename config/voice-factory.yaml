@@ -28,7 +28,7 @@ update:
   - platform: http_request
     name: Firmware Update
     update_interval: 30min
-    source: https://raw.githubusercontent.com/formatBCE/Koala-Satellite/refs/heads/main/ota/manifest.json
+    source: https://raw.githubusercontent.com/Pimmeke1989/Voice-Satellite/refs/heads/main/ota/manifest.json
 
 dashboard_import:
   package_import_url: github://Pimmeke1989/Voice-Satellite/config/common/voice-base.yaml@main

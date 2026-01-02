@@ -34,7 +34,7 @@ dashboard_import:
 esphome:
   project: 
     name: pimmeke1989.LumiTone S1
-    version: 2026.01.02_RC3
+    version: 2026.02.01
   name: lumitone-s1
   friendly_name: LumiTone S1
   name_add_mac_suffix: true
@@ -601,28 +601,68 @@ light:
           move_interval: 25ms
           scan_width: 3
 
+      # New Listening effect (thanks JJ-DUF)
       - addressable_lambda:
-          name: "Christmas"
-          update_interval: 250ms
+          name: "Listening"
+          update_interval: 30ms
           lambda: |-
-            static int offset = 0;
-            // Kleuren definiëren (Rood en iets gedimd Wit voor balans)
-            Color red = Color(255, 0, 0);
-            Color white = Color(200, 200, 200);
+            static uint8_t breathe_step = 0;
+            static bool breathe_increasing = true;
+            static int scan_pos = 0;
+            static int scan_dir = 1;
+
+            if (initial_run) {
+              breathe_step = 0;
+              breathe_increasing = true;
+              scan_pos = 0;
+              scan_dir = 1;
+            }
+
+            // Instellingen voor kleur en helderheid
+            Color base_color(0, 40, 255); // "Listening Blue"
+            uint8_t max_brightness = 166; // Cap op 65% (255 * 0.65)
+
+            // 1. Bereken de 'ademende' achtergrondsterkte (tussen 30 en 100)
+            // We gebruiken 24 stappen voor de ademhaling
+            uint8_t bg_brightness = 30 + (uint8_t)(70.0f * breathe_step / 24.0f);
 
             for (int i = 0; i < it.size(); i++) {
-              // Patroon: 2 rood, 2 wit, herhalend
-              int pos = (i + offset) % 4;
+              uint16_t pixel_bri = bg_brightness;
+
+              // 2. Bereken de highlight (Scanner)
+              int dist = abs(i - scan_pos);
               
-              if (pos < 2) {
-                it[i] = red;
-              } else {
-                it[i] = white;
+              // Als de scanner dichtbij is (binnen 4 leds), maak deze led feller
+              if (dist < 4) {
+                // Hoe dichterbij, hoe feller (max +90 helderheid erbij)
+                pixel_bri += (90 * (4 - dist) / 4);
               }
+
+              // 3. Beveiliging: Begrens de maximale helderheid
+              if (pixel_bri > max_brightness) {
+                pixel_bri = max_brightness;
+              }
+
+              // Pas de kleur toe
+              it[i] = base_color * (pixel_bri / 255.0f);
             }
-            // Verschuif het patroon voor de volgende frame
-            offset++; 
-            if (offset >= 4) offset = 0;
+
+            // 4. Update de tellers voor de volgende ronde
+            
+            // Ademhaling logic
+            if (breathe_increasing) {
+              breathe_step++;
+              if (breathe_step >= 24) breathe_increasing = false;
+            } else {
+              breathe_step--;
+              if (breathe_step <= 0) breathe_increasing = true;
+            }
+
+            // Scanner logic (Ping-Pong beweging)
+            scan_pos += scan_dir;
+            if (scan_pos >= (it.size() - 1) || scan_pos <= 0) {
+              scan_dir = -scan_dir;
+            }
 
 
 
@@ -663,10 +703,6 @@ light:
           lambda: return;
       - lambda:
           name: "Slow Pulse"
-          update_interval: 0s
-          lambda: return;
-      - lambda:
-          name: "Christmas"
           update_interval: 0s
           lambda: return;
 
@@ -906,10 +942,11 @@ script:
       - light.turn_on:
           id: voice_assistant_leds
           brightness: !lambda return max( id(led_ring).current_values.get_brightness() , 0.5f );
-          red: !lambda return id(led_ring).current_values.get_red();
-          green: !lambda return id(led_ring).current_values.get_green();
-          blue: !lambda return id(led_ring).current_values.get_blue();
-          effect: "Scan Fast"
+          # red: !lambda return id(led_ring).current_values.get_red();
+          # green: !lambda return id(led_ring).current_values.get_green();
+          # blue: !lambda return id(led_ring).current_values.get_blue();
+          # effect: "Scan Fast"
+          effect: "Listening"
 
   # Script executed when the voice assistant is thinking to a command
   # The spin stops and the 2 LEDs that are currently on and blinking indicating the commend is being processed.
@@ -1494,7 +1531,6 @@ select:
     initial_option: "Rainbow"
     options:
       - "Rainbow"
-      - "Christmas"
       - "Twinkle"
       - "Slow Pulse"
       - "None"
