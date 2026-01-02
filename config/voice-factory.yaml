@@ -2,21 +2,12 @@ packages:
   # This is an inline package to prefix the on_client_connected with the wait_until action
   # It must appear before the actual package so it becomes the orignal config and the
   # on_client_connected list from the package config is appended onto this one.
-  va_connected_wait_for_ble:
-    voice_assistant:
-      on_client_connected:
-        - wait_until:
-            not: ble.enabled
-        - delay: 2s
-    wifi:
-      on_disconnect:
-        - ble.enable:
   remote_package:
     url: https://github.com/Pimmeke1989/Voice-Satellite
     ref: main
     files:
       - config/common/voice-base.yaml
-    refresh: 0s
+    refresh: 300s
 
 ota:
   - platform: http_request
@@ -37,22 +28,7 @@ dashboard_import:
 wifi:
   on_connect:
     - delay: 5s  # Gives time for improv results to be transmitted
-    - ble.disable:
     - script.execute: control_leds
 
 improv_serial:
 
-esp32_ble:
-  name: lumitone-ble
-
-esp32_improv:
-  authorizer: user_button
-  on_start:
-    - lambda: id(improv_ble_in_progress) = true;
-    - script.execute: control_leds
-  on_provisioned:
-    - lambda: id(improv_ble_in_progress) = false;
-    - script.execute: control_leds
-  on_stop:
-    - lambda: id(improv_ble_in_progress) = false;
-    - script.execute: control_leds
