@@ -1,16 +1,16 @@
 {
   "name": "Koala Satellite",
-  "version": "2026.2.0",
+  "version": "2026.2.1",
   "home_assistant_domain": "esphome",
   "new_install_prompt_erase": false,
   "builds": [
     {
       "chipFamily": "ESP32-S3",
       "ota": {
-        "md5": "4f0e68ab2c85f0659657ba0f874ca291",
+        "md5": "1af507d1feb84a37dd23f4143fb46b99",
         "path": "koala-ota.bin",
-        "release_url": "https://github.com/formatBCE/Koala-Satellite/releases/tag/2026.2.0",
-        "summary": "Latest updates to audio stack according to Voice PE."
+        "release_url": "https://github.com/formatBCE/Koala-Satellite/releases/tag/2026.2.1",
+        "summary": "ESPHome 2026.2.0. Updates to Sendspin libraries."
       }
     }
   ]
