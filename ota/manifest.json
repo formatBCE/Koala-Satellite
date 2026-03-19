@@ -1,16 +1,16 @@
 {
   "name": "Koala Satellite",
-  "version": "2026.2.1",
+  "version": "2026.3.0",
   "home_assistant_domain": "esphome",
   "new_install_prompt_erase": false,
   "builds": [
     {
       "chipFamily": "ESP32-S3",
       "ota": {
-        "md5": "1af507d1feb84a37dd23f4143fb46b99",
+        "md5": "7cce48e306711a455f2341a935f482c9",
         "path": "koala-ota.bin",
-        "release_url": "https://github.com/formatBCE/Koala-Satellite/releases/tag/2026.2.1",
-        "summary": "ESPHome 2026.2.0. Updates to Sendspin libraries."
+        "release_url": "https://github.com/formatBCE/Koala-Satellite/releases/tag/2026.3.0",
+        "summary": "ESPHome 2026.3.0. Updates to Sendspin libraries. Refactored alarm functionality. New event for wake word."
       }
     }
   ]
