@@ -1,3 +1,5 @@
+# This file is prepared for Factory firmware. Use it only if you know what you're doing.
+
 packages:
   va_connected_wait_for_ble:
     voice_assistant:
@@ -9,6 +11,20 @@ packages:
       on_disconnect:
         - ble.enable:
   koala-satellite: !include common/koala-base.yaml
+
+# Commented out for auto-publishing. Uncomment if build manually.
+
+# ota:
+#   - platform: http_request
+#     id: ota_http_request
+
+# http_request:
+
+# update:
+#   - platform: http_request
+#     name: Firmware Update
+#     update_interval: 30min
+#     source: https://formatbce.github.io/Koala-Satellite/manifest.json
 
 dashboard_import:
   package_import_url: github://formatBCE/Koala-Satellite/config/koala-dashboard.yaml@main
