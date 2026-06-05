@@ -8,6 +8,8 @@
 
 ### Koala Satellite is a DIY device that works as a satellite for Home Assistant Assist.
 
+### *For pre-built factory firmware flashing check [online flashing tool](https://formatbce.github.io/Koala-Satellite/)*
+
 #### Main characteristics:
 - two far-field microphones, coupled with XMOS chip XU-316 for noise cancelation and voice recognition;
 - 16bit 48kHz audio output;
