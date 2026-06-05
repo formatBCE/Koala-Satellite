@@ -23,7 +23,7 @@ update:
   - platform: http_request
     name: Firmware Update
     update_interval: 30min
-    source: https://raw.githubusercontent.com/formatBCE/Koala-Satellite/refs/heads/main/ota/manifest.json
+    source: https://formatbce.github.io/Koala-Satellite/manifest.json
 
 dashboard_import:
   package_import_url: github://formatBCE/Koala-Satellite/config/koala-dashboard.yaml@main

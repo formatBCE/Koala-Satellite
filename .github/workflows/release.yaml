@@ -1,0 +1,122 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (e.g. 2026.6.0)"
+        required: true
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  PUBLISH_URL: https://formatbce.github.io/Koala-Satellite
+  YAML_PATH: config/koala.yaml      # adjust to your actual YAML path
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Stamp version into YAML
+        run: |
+          # Ensures esphome.project.version matches the release tag
+          python - <<'PY'
+          import os, re, pathlib
+          p = pathlib.Path(os.environ["YAML_PATH"])
+          s = p.read_text()
+          s = re.sub(r'(version:\s*)["\']?[^"\'\n]+["\']?',
+                     rf'\1"{os.environ["VERSION"]}"', s, count=1)
+          p.write_text(s)
+          PY
+        env:
+          VERSION: ${{ inputs.version }}
+
+      - name: Run ewt-gen
+        run: |
+          uvx ewt-gen "$YAML_PATH" \
+            --output dist \
+            --publish-url "$PUBLISH_URL" \
+            --fw-version "${{ inputs.version }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: dist/
+
+  publish-pages:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: site
+          path: dist/
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/
+      - id: deploy
+        uses: actions/deploy-pages@v4
+
+  mirror-ota-and-release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: site
+          path: dist/
+
+      - name: Refresh ota/ (latest only)
+        run: |
+          # Wipe everything in ota/ and replace with the latest manifest + ota bin.
+          # This keeps the legacy raw.githubusercontent URL working for devices
+          # in the field that haven't migrated to the Pages URL yet.
+          rm -rf ota
+          mkdir -p ota
+          # ewt-gen output structure: dist/<name>/ contains the bins + manifest.
+          # Copy just the OTA bin + manifest; not the installer html.
+          SUBDIR=$(find dist -mindepth 1 -maxdepth 1 -type d | head -n1)
+          cp "$SUBDIR"/manifest.json ota/
+          # OTA bin: ewt-gen produces *.ota.bin when --publish-url is set
+          cp "$SUBDIR"/*.ota.bin ota/ 2>/dev/null || true
+          ls -la ota/
+
+      - name: Commit ota/
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add ota/
+          git commit -m "OTA: ${{ inputs.version }}" || echo "no changes"
+          git push
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.version }}
+          name: ${{ inputs.version }}
+          generate_release_notes: true
+          files: |
+            dist/**/*.factory.bin
+            dist/**/*.ota.bin
