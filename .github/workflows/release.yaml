@@ -18,7 +18,7 @@ concurrency:
 
 env:
   PUBLISH_URL: https://formatbce.github.io/Koala-Satellite
-  FACTORY_YAML: config/koala-factory.yaml
+  FACTORY_YAML: config/koala-dashboard.yaml
 
 jobs:
   build:
