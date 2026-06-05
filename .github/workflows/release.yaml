@@ -35,7 +35,9 @@ jobs:
 
       - name: Sanity check version matches YAML
         run: |
-          YAML_VER=$(grep -E '^\s*version:' config/common/koala-base.yaml | head -n1 | sed -E 's/.*version:\s*"?([^"]+)"?\s*/\1/')
+          YAML_VER=$(grep -E '^\s*version:' config/common/koala-base.yaml \
+                     | head -n1 \
+                     | sed -E 's/.*version:\s*"?([^"]+)"?\s*/\1/')
           echo "YAML version: $YAML_VER"
           echo "Input version: ${{ inputs.version }}"
           if [ "$YAML_VER" != "${{ inputs.version }}" ]; then
@@ -49,6 +51,40 @@ jobs:
             --output dist \
             --publish-url "$PUBLISH_URL" \
             --fw-version "${{ inputs.version }}"
+          echo "=== dist/ after ewt-gen ==="
+          ls -la dist/
+
+      - name: Augment with OTA bin + ota block in manifest
+        run: |
+          V="${{ inputs.version }}"
+
+          # ESPHome's build dropped both firmware.factory.bin and firmware.ota.bin here:
+          OTA_BIN=$(find config/.esphome/build -name 'firmware.ota.bin' | head -n1)
+          test -n "$OTA_BIN" || { echo "::error::firmware.ota.bin not found"; exit 1; }
+          echo "Found OTA bin: $OTA_BIN"
+
+          OTA_NAME="koala-${V}.ota.bin"
+          cp "$OTA_BIN" "dist/$OTA_NAME"
+          MD5=$(md5sum "dist/$OTA_NAME" | awk '{print $1}')
+
+          # Patch ewt-gen's manifest.json to add the ota block alongside parts.
+          # ESP Web Tools reads parts (for install); update.http_request reads ota (for polling).
+          python - <<PY
+          import json
+          with open("dist/manifest.json") as f: m = json.load(f)
+          m["builds"][0]["ota"] = {
+              "md5": "$MD5",
+              "path": "$OTA_NAME",
+              "release_url": "https://github.com/formatBCE/Koala-Satellite/releases/tag/$V",
+              "summary": "Koala Satellite $V"
+          }
+          with open("dist/manifest.json", "w") as f:
+              json.dump(m, f, indent=2)
+          PY
+
+          echo "=== augmented manifest.json ==="
+          cat dist/manifest.json
+          echo "=== final dist/ contents ==="
           ls -la dist/
 
       - uses: actions/upload-artifact@v4
@@ -87,16 +123,10 @@ jobs:
 
       - name: Refresh ota/ (latest only)
         run: |
-          echo "=== dist/ contents ==="
-          find dist -type f | sort
-          
           rm -rf ota
           mkdir -p ota
-          
-          # ewt-gen puts files directly in --output dir, no subdir
           cp dist/manifest.json ota/
           cp dist/*.ota.bin ota/
-          
           echo "=== ota/ contents ==="
           ls -la ota/
 
@@ -115,5 +145,5 @@ jobs:
           name: ${{ inputs.version }}
           generate_release_notes: true
           files: |
-            dist/**/*.factory.bin
-            dist/**/*.ota.bin
+            dist/firmware-*.bin
+            dist/*.ota.bin
