@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Release version (e.g. 2026.6.0)"
+        description: "Release version (must match esphome.project.version in common/koala-base.yaml)"
         required: true
 
 permissions:
@@ -18,7 +18,7 @@ concurrency:
 
 env:
   PUBLISH_URL: https://formatbce.github.io/Koala-Satellite
-  YAML_PATH: config/koala.yaml      # adjust to your actual YAML path
+  FACTORY_YAML: config/koala-factory.yaml
 
 jobs:
   build:
@@ -33,26 +33,23 @@ jobs:
       - name: Install uv
         run: pip install uv
 
-      - name: Stamp version into YAML
+      - name: Sanity check version matches YAML
         run: |
-          # Ensures esphome.project.version matches the release tag
-          python - <<'PY'
-          import os, re, pathlib
-          p = pathlib.Path(os.environ["YAML_PATH"])
-          s = p.read_text()
-          s = re.sub(r'(version:\s*)["\']?[^"\'\n]+["\']?',
-                     rf'\1"{os.environ["VERSION"]}"', s, count=1)
-          p.write_text(s)
-          PY
-        env:
-          VERSION: ${{ inputs.version }}
+          YAML_VER=$(grep -E '^\s*version:' config/common/koala-base.yaml | head -n1 | sed -E 's/.*version:\s*"?([^"]+)"?\s*/\1/')
+          echo "YAML version: $YAML_VER"
+          echo "Input version: ${{ inputs.version }}"
+          if [ "$YAML_VER" != "${{ inputs.version }}" ]; then
+            echo "::error::Version mismatch — bump esphome.project.version in common/koala-base.yaml first"
+            exit 1
+          fi
 
       - name: Run ewt-gen
         run: |
-          uvx ewt-gen "$YAML_PATH" \
+          uvx ewt-gen "$FACTORY_YAML" \
             --output dist \
             --publish-url "$PUBLISH_URL" \
             --fw-version "${{ inputs.version }}"
+          ls -la dist/
 
       - uses: actions/upload-artifact@v4
         with:
@@ -90,16 +87,12 @@ jobs:
 
       - name: Refresh ota/ (latest only)
         run: |
-          # Wipe everything in ota/ and replace with the latest manifest + ota bin.
-          # This keeps the legacy raw.githubusercontent URL working for devices
-          # in the field that haven't migrated to the Pages URL yet.
           rm -rf ota
           mkdir -p ota
-          # ewt-gen output structure: dist/<name>/ contains the bins + manifest.
-          # Copy just the OTA bin + manifest; not the installer html.
           SUBDIR=$(find dist -mindepth 1 -maxdepth 1 -type d | head -n1)
+          echo "ewt-gen output is in: $SUBDIR"
+          ls -la "$SUBDIR"
           cp "$SUBDIR"/manifest.json ota/
-          # OTA bin: ewt-gen produces *.ota.bin when --publish-url is set
           cp "$SUBDIR"/*.ota.bin ota/ 2>/dev/null || true
           ls -la ota/
 
