@@ -87,13 +87,17 @@ jobs:
 
       - name: Refresh ota/ (latest only)
         run: |
+          echo "=== dist/ contents ==="
+          find dist -type f | sort
+          
           rm -rf ota
           mkdir -p ota
-          SUBDIR=$(find dist -mindepth 1 -maxdepth 1 -type d | head -n1)
-          echo "ewt-gen output is in: $SUBDIR"
-          ls -la "$SUBDIR"
-          cp "$SUBDIR"/manifest.json ota/
-          cp "$SUBDIR"/*.ota.bin ota/ 2>/dev/null || true
+          
+          # ewt-gen puts files directly in --output dir, no subdir
+          cp dist/manifest.json ota/
+          cp dist/*.ota.bin ota/
+          
+          echo "=== ota/ contents ==="
           ls -la ota/
 
       - name: Commit ota/
