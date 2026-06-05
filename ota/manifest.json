@@ -1,17 +1,22 @@
 {
-  "name": "Koala Satellite",
-  "version": "2026.5.0",
-  "home_assistant_domain": "esphome",
-  "new_install_prompt_erase": false,
+  "name": "koala-satellite",
   "builds": [
     {
       "chipFamily": "ESP32-S3",
+      "parts": [
+        {
+          "path": "firmware-esp32s3-2026.6.0.bin",
+          "offset": 0
+        }
+      ],
       "ota": {
-        "md5": "8d5fb1f5f357d333559aaffa74f4732e",
-        "path": "koala-ota.bin",
-        "release_url": "https://github.com/formatBCE/Koala-Satellite/releases/tag/2026.5.0",
-        "summary": "ESPHome 2026.5.0. Using upstream Sendspin components."
+        "md5": "42c113f155a37388329d9ecb4b6e9e90",
+        "path": "koala-2026.6.0.ota.bin",
+        "release_url": "https://github.com/formatBCE/Koala-Satellite/releases/tag/2026.6.0",
+        "summary": "Koala Satellite 2026.6.0"
       }
     }
-  ]
+  ],
+  "version": "2026.6.0",
+  "home_assistant_domain": "esphome"
 }
