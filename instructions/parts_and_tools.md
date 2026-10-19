@@ -5,7 +5,7 @@
 - LED: 144 diodes/meter addressable WS2812B, 43 diodes long (exact strip i used isn't selling anymore, but any 144/m will fit);
 - speaker: 2" 4Ohm 5W ([example](https://a.co/d/cEpEeNt));
 - 10x M3 screws ([i used this set](https://a.co/d/e6pNfBu));
-- 10x threaded inserts ([i used this](https://a.co/d/bMeMx9B));
+- 10x M3x4x5mm threaded inserts ([i used this](https://a.co/d/bMeMx9B));
 - Jst 2.0 Ph 2-Pin Connector (male and female) for speaker like [this](https://a.co/d/aUkOTCS);
 - some 3-wired male-female connector for easy LED strip connection ([i used one from this kit](https://a.co/d/9OdHJpC));
 - cords of various length;
