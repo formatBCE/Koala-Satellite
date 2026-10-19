@@ -10,7 +10,7 @@ Other content:
 - `casing/`: 3D-print files (STEP, STL, 3MF) and assembly images. Do not edit these files.
 - `instructions/`: user guides for assembly, parts, and software.
 - `respeaker_lite_i2s_dfu_firmware_48k_v1.1.0.bin`: XMOS firmware for manual flash only.
-- `koala-factory.bin`: a legacy binary. The current factory firmware comes from GitHub Pages.
+- Release binaries are not in the repository. The factory and OTA images of each release are on GitHub Pages and attached to the GitHub release. Do not commit firmware binaries.
 - `ota/`: the CI workflow writes this directory. Do not edit it by hand.
 
 ## Commands
