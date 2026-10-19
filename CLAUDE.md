@@ -60,12 +60,14 @@ Important parts of the configuration:
 
 ## Release process
 
-The release is `.github/workflows/release.yaml`. A person starts it manually (`workflow_dispatch`) with a `version` input.
+`.github/workflows/release.yaml` publishes a release. A push to `main` that changes `packages/koala/device.yaml` starts it. A manual run (`workflow_dispatch`) does the same and also takes an optional `summary` for the update entity.
 
-1. Set the new version in three places: `esphome.project.version` in `packages/koala/device.yaml`, and `koala_ref` in `config/koala-satellite.yaml` and `config/koala-dashboard.yaml`. The CI step fails if a value is different from the input. The check reads the **first** `version:` line of `packages/koala/device.yaml`, so do not add another `version:` key before `esphome.project`. If Koala needs a newer Lite release, set `respeaker_lite_ref` in `config/common/koala-base.yaml`, and make sure that the Lite tag exists.
-2. CI runs `uvx ewt-gen config/koala-satellite.yaml`. This command builds the firmware and generates the ESP Web Tools site.
-3. CI adds an `ota` block (md5, path, release URL) to `manifest.json` and copies `firmware.ota.bin` as `koala-<version>.ota.bin`.
-4. CI deploys the site to GitHub Pages (`https://formatbce.github.io/Koala-Satellite`). Factory devices get OTA updates from `manifest.json` on this site. The `update:` block is commented out in the YAML, so `ewt-gen` (through `--publish-url`) must supply it. This repository does not confirm that behavior.
-5. CI replaces `ota/` with the new manifest and binary and commits as `github-actions[bot]`. CI then creates a GitHub release with that tag.
+1. To release, set the new version in three places in one commit: `esphome.project.version` in `packages/koala/device.yaml`, and `koala_ref` in `config/koala-satellite.yaml` and `config/koala-dashboard.yaml`. If Koala needs a newer Lite release, also set `respeaker_lite_ref` in `config/common/koala-base.yaml`. Push to `main`.
+2. The `prepare` job reads the **first** `version:` line of `packages/koala/device.yaml`, so do not add another `version:` key before `esphome.project`. If a tag with that version exists, a push does nothing and a manual run fails. Then it checks that both `koala_ref` values equal the version and that the Lite tag exists.
+3. The `build` job installs the pinned `ESPHOME_VERSION` and runs the pinned `ewt-gen` on `config/koala-satellite.yaml`. `ewt-gen` writes a `.factory.yaml` that adds `ota: http_request`, `update: http_request` (source: the Pages manifest), and `http_request`, so these blocks stay commented out in the YAML. It also writes `dashboard_import` from `--import-url` (`config/common/koala-base.yaml@<version>`) and the manifest with its `ota` entry.
+4. CI deploys the site to GitHub Pages (`https://formatbce.github.io/Koala-Satellite`). Factory devices get OTA updates from `manifest.json` on this site.
+5. CI replaces `ota/` with the new manifest and OTA binary, commits as `github-actions[bot]`, and creates a GitHub release and tag on the version-bump commit.
+
+To change the build tools, raise `ESPHOME_VERSION` or `EWT_GEN_VERSION` in the workflow on purpose. To test a release build locally, run the same `ewt-gen` command on a copy of the repository: it writes `.factory.yaml` and `.esphome/` next to the config.
 
 Version format is calendar based: `YYYY.M.N` (for example, `2026.6.0`).
