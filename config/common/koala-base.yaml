@@ -626,7 +626,7 @@ light:
     chipset: WS2812
     max_refresh_rate: 15ms
     num_leds: 43
-    rgb_order: GRB
+    channel_colors: GRB
     rmt_symbols: 96
     default_transition_length: 0ms
     color_correct: [70%, 70%, 70%]
@@ -875,7 +875,7 @@ light:
     name: LED Respeaker onboard
     disabled_by_default: true
     internal: false
-    rgb_order: GRB
+    channel_colors: GRB
     pin: GPIO1
     num_leds: 1
     rmt_symbols: 48
@@ -900,7 +900,7 @@ light:
     name: LED ESP onboard
     disabled_by_default: true
     internal: false
-    rgb_order: GRB
+    channel_colors: GRB
     pin: GPIO48
     num_leds: 1
     rmt_symbols: 48
