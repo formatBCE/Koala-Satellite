@@ -40,10 +40,10 @@ All device logic is in `config/common/koala-base.yaml` (about 2000 lines). The t
 - `config/koala-dashboard.yaml`: the configuration for users who adopt the device into their own ESPHome dashboard. It uses `!secret` Wi-Fi credentials and a fixed name. Users copy `koala-base.yaml` into `common/` in their ESPHome root, so keep the relative include path `common/koala-base.yaml`.
 
 Important parts of `koala-base.yaml`:
-- **External components** (at the end of the file) pull live git branches with `refresh: 0s`:
-  - `formatBCE/esphome@respeaker_microphone` replaces the core `i2s_audio` component.
-  - `formatBCE/Respeaker-Lite-ESPHome-integration@main` supplies `respeaker_lite` (the XMOS control, mute, and DFU auto-update). The DFU `url` points at that repository, not at the `.bin` file in this repository.
-  - A change in those branches changes the build output without a commit here.
+- **External components** (at the end of the file) pull git refs with `refresh: 0s`:
+  - `formatBCE/esphome@${i2s_audio_ref}` (the `respeaker_microphone` branch) replaces the core `i2s_audio` component. A change in that branch changes the build output without a commit here.
+  - `formatBCE/Respeaker-Lite-ESPHome-integration@${respeaker_lite_ref}` supplies `respeaker_lite` (the XMOS control, mute, and DFU auto-update). The DFU `url` and the `kenobi` wake word model also come from that repository at the same ref, not from the `.bin` file in this repository.
+  - `respeaker_lite_ref` pins a Lite release tag. Update it on purpose when Koala needs a newer Lite release, and make sure that the tag exists before a Koala release.
 - **LED state machine**: the `control_leds` script is the single dispatcher. It reads globals (`init_in_progress`, `improv_ble_in_progress`, `voice_assistant_phase`, `is_timer_active`, and others) and runs one `control_leds_*` script. When you add a new device state, add a global and a branch in `control_leds`. Then call `script.execute: control_leds`. Do not drive the LEDs directly from event handlers.
 - **Voice assistant phases** are numeric substitutions (`voice_assist_*_phase_id`) at the start of the file. They match the Voice PE values.
 - **Audio path**: I2S input and output share pins GPIO7, GPIO8, and GPIO9 through the `i2s_input` and `i2s_output` IDs. The speaker chain is `i2s_audio` → `mixer` → `resampler` at 48 kHz. The ReSpeaker DFU firmware must be the 48 kHz build.
