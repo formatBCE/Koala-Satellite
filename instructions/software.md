@@ -17,8 +17,20 @@ So now there's no need to update DFU firmware. Woohoo!
 It will install the firmware, similar to the one Voice PE has. It will be able to connect to any WiFi network via BLE Improv, and in case of reconnecting to other WiFi you will have to just reset the device to factory settings. Also this version will receive OTA from this repository. You will see Home Assistant system prompt to update your device once the update is available. Basically set-and-forget option, and the option to choose if you're making the device for a friend/family.
 
 #### Manual building with ESPHome
-There's dashboard configuration available: [dashboard](/config/koala-dashboard.yaml). Also you will need to copy [base config YAML](/config/common/koala-base.yaml) into `common` directory in your ESPHome root folder. Alternatively, you can copy everything from `koala-base.yaml` to the dashboard config and merge everything inside.
-Build the firmware with ESPHome and flash it with your method of choice.
+1. Copy the [dashboard configuration](/config/koala-dashboard.yaml) into your ESPHome dashboard. You do not need other files. The configuration gets the firmware from GitHub.
+2. Put `wifi_ssid` and `wifi_password` into your ESPHome secrets.
+3. Build the firmware with ESPHome and flash it with your method of choice.
+
+The `koala_ref` substitution in the configuration selects the Koala release. The device does not change until you change this value. To update the device, set `koala_ref` to the tag of a newer release and install the configuration again. The [tags page](https://github.com/formatBCE/Koala-Satellite/tags) shows all releases.
+
+#### Update from an older manual installation
+Older instructions told you to copy `koala-base.yaml` into the `common` directory. That copy does not get updates. Do these steps to change to the new configuration:
+1. Make a backup of your Koala configuration and of `common/koala-base.yaml`.
+2. Replace your Koala configuration with the new [dashboard configuration](/config/koala-dashboard.yaml). Keep your own changes, for example the device name.
+3. Install the configuration on the device.
+4. Delete `common/koala-base.yaml` if no other configuration uses it.
+
+The firmware is now a set of packages. Most of them come from [Respeaker-Lite-ESPHome-integration](https://github.com/formatBCE/Respeaker-Lite-ESPHome-integration#change-the-configuration), and its README tells you how to change them without a copy. The Koala hardware is in [packages/koala/device.yaml](/packages/koala/device.yaml).
 
 ### Connecting to Home Assistant
 - I'm sure you already know how to connect ESPHome devices to Home Assistant. If it's your first time, please check the [official documentation](https://www.home-assistant.io/integrations/esphome/).

@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Release version (must match esphome.project.version in common/koala-base.yaml)"
+        description: "Release version (must match esphome.project.version in packages/koala/device.yaml)"
         required: true
 
 permissions:
@@ -35,15 +35,22 @@ jobs:
 
       - name: Sanity check version matches YAML
         run: |
-          YAML_VER=$(grep -E '^\s*version:' config/common/koala-base.yaml \
+          YAML_VER=$(grep -E '^\s*version:' packages/koala/device.yaml \
                      | head -n1 \
                      | sed -E 's/.*version:\s*"?([^"]+)"?\s*/\1/')
           echo "YAML version: $YAML_VER"
           echo "Input version: ${{ inputs.version }}"
           if [ "$YAML_VER" != "${{ inputs.version }}" ]; then
-            echo "::error::Version mismatch — bump esphome.project.version in common/koala-base.yaml first"
+            echo "::error::Version mismatch — bump esphome.project.version in packages/koala/device.yaml first"
             exit 1
           fi
+          for f in config/koala-satellite.yaml config/koala-dashboard.yaml; do
+            REF=$(grep -E '^[[:space:]]*koala_ref:' "$f" | head -n1 | sed -E 's/.*koala_ref:[[:space:]]*"?([^"]+)"?[[:space:]]*$/\1/')
+            if [ "$REF" != "${{ inputs.version }}" ]; then
+              echo "::error::koala_ref in $f is '$REF' — set it to ${{ inputs.version }} first"
+              exit 1
+            fi
+          done
 
       - name: Run ewt-gen
         run: |
