@@ -32,6 +32,40 @@ Older instructions told you to copy `koala-base.yaml` into the `common` director
 
 The firmware is now a set of packages. Most of them come from [Respeaker-Lite-ESPHome-integration](https://github.com/formatBCE/Respeaker-Lite-ESPHome-integration#change-the-configuration), and its README tells you how to change them without a copy. The Koala hardware is in [packages/koala/device.yaml](/packages/koala/device.yaml).
 
+#### Use another ESP32-S3 board
+The firmware uses the pins of the ESP32-S3 DevKitC. For another board, set the pins in the `substitutions:` block of your dashboard configuration. Your values override the defaults.
+
+| Substitution | DevKitC default | Function |
+| --- | --- | --- |
+| `user_button_pin` | `GPIO42` | Koala button |
+| `led_ring_pin` | `GPIO13` | Data line of the LED ring |
+| `dial_a_pin` | `GPIO47` | Encoder `CLK` |
+| `dial_b_pin` | `GPIO21` | Encoder `DT` |
+| `dial_button_pin` | `GPIO20` | Encoder `SW` |
+| `esp_onboard_led_pin` | `GPIO48` | RGB LED on the DevKitC |
+| `dial_button_mutes_speaker` | `"false"` | Set to `"true"` to toggle the speaker mute with a press of the dial |
+
+Use a board with 16 MB flash. The ReSpeaker Lite pins do not change.
+
+If your board has no RGB LED on `GPIO48`, remove that light:
+
+```yaml
+light:
+  - id: !remove led_esp_onboard
+```
+
+On the DevKitC, `GPIO20` is a USB pin of the ESP32-S3. Noise on it gives false presses of the dial. For this reason, `dial_button_mutes_speaker` is `"false"` by default. Enable it only on a board where the dial press uses another pin.
+
+A user reported these encoder pins on a XIAO ESP32-S3 Plus. I did not test them:
+
+```yaml
+substitutions:
+  dial_a_pin: GPIO12
+  dial_b_pin: GPIO41
+  dial_button_pin: GPIO10
+  dial_button_mutes_speaker: "true"
+```
+
 ### Connecting to Home Assistant
 - I'm sure you already know how to connect ESPHome devices to Home Assistant. If it's your first time, please check the [official documentation](https://www.home-assistant.io/integrations/esphome/).
 - In case of Factory firmware you will need to connect the device to the WiFi first. Check [Improv docs](https://www.home-assistant.io/integrations/improv_ble/) for details.

@@ -8,6 +8,21 @@
 # them.
 # =============================================================================
 
+substitutions:
+  # Pins of the ESP32-S3 board. The defaults are for the ESP32-S3 DevKitC that
+  # the assembly guide uses. For another board, set your own values in your
+  # configuration. The ReSpeaker Lite pins are fixed and are not here.
+  user_button_pin: GPIO42
+  led_ring_pin: GPIO13
+  dial_a_pin: GPIO47       # KY-040 CLK
+  dial_b_pin: GPIO21       # KY-040 DT
+  dial_button_pin: GPIO20  # KY-040 SW
+  esp_onboard_led_pin: GPIO48
+  # Set to "true" to toggle the speaker mute with a press of the dial. Keep
+  # "false" on the DevKitC: GPIO20 is a USB pin of the ESP32-S3, and noise on
+  # it gives false presses.
+  dial_button_mutes_speaker: "false"
+
 esphome:
   name: koala-satellite
   friendly_name: Koala Satellite
@@ -35,25 +50,38 @@ binary_sensor:
   - platform: gpio
     id: user_button
     pin:
-      number: GPIO42
+      number: ${user_button_pin}
       inverted: true
     name: "User button"
+  # The dial press. On the DevKitC it is on GPIO20, a USB pin of the ESP32-S3,
+  # and it gives false presses there. dial_button_mutes_speaker enables its action.
   - platform: gpio
-  # this thing is pretty flaky, giving several on/off commands at once. Do not use it for serious stuff
     id: rotary_button
     disabled_by_default: true
     pin:
-      number: GPIO20
+      number: ${dial_button_pin}
       inverted: true
       mode:
         input: true
         pullup: true
+    on_press:
+      - if:
+          condition:
+            lambda: return ${dial_button_mutes_speaker} && !id(init_in_progress) && !id(disable_buttons).state;
+          then:
+            - if:
+                condition:
+                  lambda: return id(external_media_player).is_muted();
+                then:
+                  - media_player.unmute: external_media_player
+                else:
+                  - media_player.mute: external_media_player
 
 light:
   # Hardware LED ring. Not used because remapping needed
   - platform: esp32_rmt_led_strip
     id: leds_internal
-    pin: GPIO13
+    pin: ${led_ring_pin}
     chipset: WS2812
     max_refresh_rate: 15ms
     num_leds: 43
@@ -332,7 +360,7 @@ light:
     disabled_by_default: true
     internal: false
     channel_colors: GRB
-    pin: GPIO48
+    pin: ${esp_onboard_led_pin}
     num_leds: 1
     rmt_symbols: 48
     chipset: ws2812
@@ -343,8 +371,8 @@ sensor:
   # The dial. Used to control volume and Hue of the LED ring.
   - platform: rotary_encoder
     id: dial
-    pin_a: GPIO47
-    pin_b: GPIO21
+    pin_a: ${dial_a_pin}
+    pin_b: ${dial_b_pin}
     resolution: 1
     on_clockwise:
       - lambda: id(dial_touched) = true;

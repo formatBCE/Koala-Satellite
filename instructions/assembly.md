@@ -40,8 +40,9 @@ _HINT: If you print with dark/non-translucent filament, consider printing face p
   - power -> `5V`
   - ground -> `GND`
   - data -> `GPIO13`
+- **Caution: connect the encoder `+` to `3V3`, not to `5V`.** Most KY-040 modules have pull-up resistors to `+`. With `5V` on `+`, the `SW`, `CLK`, and `DT` lines get 5 V, and the ESP32-S3 pins are not 5 V tolerant.
 - Solder the rotary encoder to ESP board. Make sure cables length is enough for mounting, but not too long.
-  - `+` -> `5V`
+  - `+` -> `3V3`
   - `GND` -> `GND`
   - `SW` -> `GPIO20`
   - `CLK` -> `GPIO47`

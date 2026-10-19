@@ -40,6 +40,7 @@ The firmware is a set of packages. Most of them come from `formatBCE/Respeaker-L
 
 - To change voice, media, timer, alarm, or button behavior, change the Lite repository, release it, and bump `respeaker_lite_ref` here.
 - `packages/koala/device.yaml` hooks into core items with `id: !extend <id>` (`alarm_on`, `external_media_player`). It also supplies the hooks that `core/controls.yaml` calls: `control_leds_status_off`, `control_leds_factory_reset_coming_up`, and `control_leds_factory_reset_confirmed`.
+- Board pins are substitutions at the top of `packages/koala/device.yaml`, with DevKitC defaults (`user_button_pin`, `led_ring_pin`, `dial_a_pin`, `dial_b_pin`, `dial_button_pin`, `esp_onboard_led_pin`). Do not hardcode a board pin. `dial_button_mutes_speaker` (default `"false"`) enables the dial press action, because `GPIO20` on the DevKitC is a noisy USB pin.
 - `alarm_on` in the device package uses the `then:` trigger form on purpose. A map replaces the core trigger list. A list would add to it.
 - To verify a refactor, run `esphome config` before and after, and diff the merged output.
 
