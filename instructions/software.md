@@ -75,4 +75,6 @@ _**(When asked to authorize by pressing button on device, use small round button
 ### Using the alarm functionality.
 Since 2025.4.1, the device has built-in alarm, that you can setup and use in your smart home. Check [this short tutorial](https://github.com/formatBCE/Respeaker-Lite-ESPHome-integration/blob/ae414e06fea8334e726837d5dbe72a55645b3445/readme/alarms.md) on how to set it up!
 
+Since 2026.10.0, you can say "Snooze" to a ringing timer or alarm. The ring stops, and starts again after the **Snooze duration**. Read [Snooze](https://github.com/formatBCE/Respeaker-Lite-ESPHome-integration/blob/2026.10.0/readme/alarms.md#snooze) for the details.
+
 ### _Happy tinkering!_
