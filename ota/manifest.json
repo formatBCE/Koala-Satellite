@@ -5,19 +5,19 @@
       "chipFamily": "ESP32-S3",
       "parts": [
         {
-          "path": "firmware-esp32s3-2026.9.2.bin",
+          "path": "firmware-esp32s3-2026.10.0.bin",
           "offset": 0
         }
       ],
       "ota": {
-        "path": "firmware-esp32s3-2026.9.2.ota.bin",
-        "md5": "369a27e0f23c65b9317851f940f35e0b",
-        "sha256": "d117e36f5dc725ec663eb15d6f38b6e4d530d0921a306f883df108517499e6ed",
-        "summary": "Koala Satellite 2026.9.2",
-        "release_url": "https://github.com/formatBCE/Koala-Satellite/releases/tag/2026.9.2"
+        "path": "firmware-esp32s3-2026.10.0.ota.bin",
+        "md5": "af301e382102e364392dbec5ee4484de",
+        "sha256": "cb8f6058222d78d30bde15e32e8e1a785417e5e56a91079b4c40eb335a626473",
+        "summary": "Koala Satellite 2026.10.0",
+        "release_url": "https://github.com/formatBCE/Koala-Satellite/releases/tag/2026.10.0"
       }
     }
   ],
-  "version": "2026.9.2",
+  "version": "2026.10.0",
   "home_assistant_domain": "esphome"
 }
