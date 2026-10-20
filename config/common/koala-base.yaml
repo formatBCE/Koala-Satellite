@@ -14,7 +14,7 @@ substitutions:
   # such as 2026.9.2, a branch, or a commit. It selects the core packages, the
   # ReSpeaker Lite hardware package, the respeaker_lite component, the wake
   # word model, and the XMOS firmware.
-  respeaker_lite_ref: 2026.9.3
+  respeaker_lite_ref: 2026.9.4
 
 packages:
   respeaker_lite:
