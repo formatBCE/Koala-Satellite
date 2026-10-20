@@ -3,7 +3,7 @@
 
 substitutions:
   # Release of the Koala firmware. To update the device, set a newer release.
-  koala_ref: 2026.9.2
+  koala_ref: 2026.10.0
 
 packages:
   koala:
