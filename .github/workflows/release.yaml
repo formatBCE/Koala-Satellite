@@ -31,7 +31,7 @@ env:
   FACTORY_YAML: config/koala-satellite.yaml
   LITE_REPO: https://github.com/formatBCE/Respeaker-Lite-ESPHome-integration
   # Build tools. Raise them on purpose, so that a release is reproducible.
-  ESPHOME_VERSION: "2026.9.1"
+  ESPHOME_VERSION: "2026.10.0"
   EWT_GEN_VERSION: "1.6.1"
 
 jobs:
