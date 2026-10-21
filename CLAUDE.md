@@ -56,7 +56,7 @@ Important parts of the configuration:
 - **LED state machine** (in `packages/koala/device.yaml`): the `control_leds` script is the single dispatcher. It reads globals (`init_in_progress`, `improv_ble_in_progress`, `voice_assistant_phase`, `is_timer_active`, and others) and runs one `control_leds_*` script. When you add a new device state, add a global and a branch in `control_leds`. Then call `script.execute: control_leds`. Do not drive the LEDs directly from event handlers.
 - **Voice assistant phases** are numeric substitutions (`voice_assist_*_phase_id`) in Lite's `packages/core/base.yaml`. They match the Voice PE values.
 - **Audio path**: I2S input and output share pins GPIO7, GPIO8, and GPIO9 through the `i2s_input` and `i2s_output` IDs. The speaker chain is `i2s_audio` → `mixer` → `resampler` at 48 kHz. The ReSpeaker DFU firmware must be the 48 kHz build.
-- **Sounds** come from URLs in the Voice PE repository through `substitutions` in Lite's `packages/core/voice-assistant.yaml`.
+- **Sounds** come from Lite's `sounds/` directory through `substitutions` in Lite's `packages/core/voice-assistant.yaml` and `packages/core/controls.yaml` (the button sounds).
 - `esphome.min_version` follows the ESPHome release that the firmware needs. Update it when you use newer ESPHome features.
 
 ## Release process
