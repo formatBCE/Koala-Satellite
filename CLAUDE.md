@@ -44,13 +44,13 @@ The firmware is a set of packages. Most of them come from `formatBCE/Respeaker-L
 - `alarm_on` in the device package uses the `then:` trigger form on purpose. A map replaces the core trigger list. A list would add to it.
 - To verify a refactor, run `esphome config` before and after, and diff the merged output.
 
-- `config/koala-satellite.yaml`: the factory firmware. It adds `improv_serial`, `esp32_improv` (BLE), and `dashboard_import`. It also adds a package that disables BLE after the Wi-Fi connection and enables BLE again on disconnect. The `ota: http_request` and `update:` blocks stay commented out on purpose. The comment says "Commented out for auto-publishing". Do not uncomment these blocks in a commit. Uncomment them only for a local manual build.
+- `config/koala-satellite.yaml`: the factory firmware. It adds `improv_serial`, `improv_ble` (BLE), and `dashboard_import`. It also adds a package that disables BLE after the Wi-Fi connection and enables BLE again on disconnect. The `ota: http_request` and `update:` blocks stay commented out on purpose. The comment says "Commented out for auto-publishing". Do not uncomment these blocks in a commit. Uncomment them only for a local manual build.
 - `config/koala-dashboard.yaml`: the configuration for users who build in their own ESPHome dashboard. Users copy only this file. It gets `config/common/koala-base.yaml` from this repository at `koala_ref`, and it uses `!secret` Wi-Fi credentials and a fixed name.
 - The factory firmware's `dashboard_import` points at `config/common/koala-base.yaml@${koala_ref}`, so an adopted device imports the release it runs.
 
 Important parts of the configuration:
 - **External components** (in Lite's `packages/respeaker-lite/hardware.yaml`) pull git refs with `refresh: 0s`:
-  - `formatBCE/esphome@${i2s_audio_ref}` (the `respeaker_microphone` branch) replaces the core `i2s_audio` component. A change in that branch changes the build output without a commit here.
+  - `i2s_audio` is the stock ESPHome component. Lite's hardware package resamples the 48 kHz microphones to 16 kHz with the `resampler` microphone, so the firmware needs ESPHome 2026.10.0 or newer (`min_version` comes from Lite's core; keep `ESPHOME_VERSION` in the release workflow at or above it).
   - `formatBCE/Respeaker-Lite-ESPHome-integration@${respeaker_lite_ref}` supplies `respeaker_lite` (the XMOS control, mute, and DFU auto-update). The DFU `url` and the `kenobi` wake word model also come from that repository at the same ref, not from the `.bin` file in this repository.
   - `respeaker_lite_ref` pins a Lite release tag. Update it on purpose when Koala needs a newer Lite release, and make sure that the tag exists before a Koala release.
 - **LED state machine** (in `packages/koala/device.yaml`): the `control_leds` script is the single dispatcher. It reads globals (`init_in_progress`, `improv_ble_in_progress`, `voice_assistant_phase`, `is_timer_active`, and others) and runs one `control_leds_*` script. When you add a new device state, add a global and a branch in `control_leds`. Then call `script.execute: control_leds`. Do not drive the LEDs directly from event handlers.
