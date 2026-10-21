@@ -29,7 +29,7 @@ esphome:
   name_add_mac_suffix: true
   project: 
     name: formatbce.Koala Satellite
-    version: 2026.10.0
+    version: 2026.10.1
 
 esp32:
   flash_size: 16MB
@@ -338,7 +338,16 @@ light:
     pin: GPIO1
     num_leds: 1
     rmt_symbols: 48
-    chipset: ws2812
+    # Explicit timings, as on the Respeaker Lite and the Voice PE. The ws2812
+    # preset sends no reset, and newer LEDs drop a frame that follows the last
+    # one within 280 us (Respeaker-Lite-ESPHome-integration#88).
+    bit0_high: 300ns
+    bit0_low: 975ns
+    bit1_high: 650ns
+    bit1_low: 650ns
+    reset_low: 300us
+    reset_high: 0us
+    max_refresh_rate: 15ms
     entity_category: config
     default_transition_length: 0s
     effects:
