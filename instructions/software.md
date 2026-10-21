@@ -56,7 +56,10 @@ light:
 
 On the DevKitC, `GPIO20` is a USB pin of the ESP32-S3. Noise on it gives false presses of the dial. For this reason, `dial_button_mutes_speaker` is `"false"` by default. Enable it only on a board where the dial press uses another pin.
 
-A user reported these encoder pins on a XIAO ESP32-S3 Plus. I did not test them:
+A user reported these pins on a XIAO ESP32-S3. I did not test them:
+
+- The LED ring uses the default pin, `GPIO13`. On the XIAO ESP32-S3 Plus, `GPIO13` is on a small pad between the through-hole pins. On the standard XIAO ESP32-S3, `GPIO13` is on the pads for the camera (Sense) board, so you must solder a thin wire to it.
+- The encoder uses these pins on the XIAO ESP32-S3 Plus:
 
 ```yaml
 substitutions:
@@ -65,6 +68,8 @@ substitutions:
   dial_button_pin: GPIO10
   dial_button_mutes_speaker: "true"
 ```
+
+Set `user_button_pin` to a free pin of your board. The report does not include a pin for the Koala button.
 
 ### Connecting to Home Assistant
 - I'm sure you already know how to connect ESPHome devices to Home Assistant. If it's your first time, please check the [official documentation](https://www.home-assistant.io/integrations/esphome/).
