@@ -28,7 +28,7 @@ packages:
 
 substitutions:
   # Release of this firmware. An adopted device imports the same release.
-  koala_ref: 2026.10.3
+  koala_ref: 2026.10.4
 
 dashboard_import:
   package_import_url: github://formatBCE/Koala-Satellite/config/common/koala-base.yaml@${koala_ref}
