@@ -1,3 +1,8 @@
+> **This repository moved.** The Koala firmware is now in
+> [formatBCE/Respeaker-ESPHome-integration](https://github.com/formatBCE/Respeaker-ESPHome-integration/blob/main/readme/koala/README.md).
+> This repository gets no new releases. Read
+> [Move from the old repository](https://github.com/formatBCE/Respeaker-ESPHome-integration/blob/main/readme/koala/software.md#move-from-the-old-repository).
+
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/formatbce)
 
 # Koala Satellite
